@@ -152,43 +152,43 @@ class Board:
                     table_lig[j].append(1000)
                 elif i== "FB":
                     table[j].append(120)
-                    table_lig[j].append(1)
+                    table_lig[j].append(100)
                 elif i== "FE":
                     table[j].append(130)
-                    table_lig[j].append(1)
+                    table_lig[j].append(10)
                 elif i== "FD":
                     table[j].append(140)
                     table_lig[j].append(1)
                 elif i== "BC":
                     table[j].append(310)
-                    table_lig[j].append(3)
+                    table_lig[j].append(1101)
                 elif i== "BB":
                     table[j].append(320)
-                    table_lig[j].append(3)
+                    table_lig[j].append(1110)
                 elif i== "BE":
                     table[j].append(330)
-                    table_lig[j].append(3)
+                    table_lig[j].append(111)
                 elif i== "BD":
                     table[j].append(340)
-                    table_lig[j].append(3)
+                    table_lig[j].append(1011)
                 elif i== "VC":
                     table[j].append(210)
-                    table_lig[j].append(2)
+                    table_lig[j].append(1001)
                 elif i== "VB":
                     table[j].append(220)
-                    table_lig[j].append(2)
+                    table_lig[j].append(110)
                 elif i== "VE":
                     table[j].append(230)
-                    table_lig[j].append(2)
+                    table_lig[j].append(11)
                 elif i== "VD":
                     table[j].append(240)
-                    table_lig[j].append(2)
+                    table_lig[j].append(1100)
                 elif i== "LH":
                     table[j].append(410)
-                    table_lig[j].append(2)
+                    table_lig[j].append(101)
                 elif i== "LV":
                     table[j].append(420)
-                    table_lig[j].append(2)
+                    table_lig[j].append(1010)
             j=j+1
 
         return Board(Board,table,table_lig)
