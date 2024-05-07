@@ -146,7 +146,7 @@ class Board:
     def quero_cima(self, row: int, col: int) -> int:
         ligacao= -1
         if not (row > self.tamanho | row-1 < 0 | col > self.tamanho | col<0):
-            ligacao= self.tablel[row-1][col]
+            ligacao= self.tablel[row-1][col][0]
             return ligacao%100//10
         return ligacao
         # TODO
@@ -154,7 +154,7 @@ class Board:
     def quero_baixo(self, row: int, col: int) -> int:
         ligacao= -1
         if not (row+1 > self.tamanho | row < 0 | col > self.tamanho | col<0):
-            ligacao= self.tablel[row+1][col]
+            ligacao= self.tablel[row+1][col][0]
             return ligacao//1000
         return ligacao
         # TODO
@@ -162,14 +162,14 @@ class Board:
     def quero_direita(self, row: int, col: int) -> int:
         ligacao= -1
         if not (row > self.tamanho | row < 0 | col+1 > self.tamanho | col<0):
-            ligacao= self.tablel[row][col+1]
+            ligacao= self.tablel[row][col+1][0]
             return ligacao%10
         return ligacao
         pass
     def quero_esquerda(self, row: int, col: int) -> int:
         ligacao= -1
         if not (row > self.tamanho | row < 0 | col > self.tamanho | col-1<0):
-            ligacao= self.tablel[row][col-1]
+            ligacao= self.tablel[row][col-1][0]
             return ligacao%1000//100
         return ligacao
         # TODO
@@ -177,7 +177,7 @@ class Board:
 
 
     def roda(self, row: int , col: int , rotacao: int ):
-        peca=self.tablel[row][col]
+        peca=self.tablel[row][col][0]
         if rotacao==1:
             nova=peca%10*1000+ peca//1000*100+peca%1000//100*10+peca%100//10
         if rotacao==2:
@@ -185,37 +185,53 @@ class Board:
         if rotacao==3:
             nova=peca//1000+ peca%1000//100*1000+peca%100//10*100+peca%10*10
 
-        self.tablel[row][col]=nova
+        self.tablel[row][col][0]=nova
     
 
-    def hipostese(self,row:int,col:int)-> int:
+    def hipostese(self,row:int,col:int):
+        peca=self.tablel[row][col][0]
+        dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+        ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
+
+        if ligacao==2:
+            if (dirpeca[0]==dirpeca[2]|dirpeca[1]==dirpeca[3]):
+                ligacao=4
+        if ligacao==3:
+            if row==0:
+                self.tablel[row][col]=[111,1]
+            elif row== self.tamanho:
+                self.tablel[row][col]=[1101,1]
+            elif col==0:
+                self.tablel[row][col]=[1110,1]
+            elif col==self.tamanho:
+                self.tablel[row][col]=[1011,1]
+        elif ligacao==4:
+            if row==0 or row == self.tamanho:
+                self.tablel[row][col]=[101,1]
+            elif col==0 or col == self.tamanho:
+                self.tablel[row][col]=[1010,1]
+        elif ligacao==2:
+            if (row==0 and col==0):
+                self.tablel[row][col]=[110,1]
+            if (row==0 and col==self.tamanho):
+                self.tablel[row][col]=[11,1]
+            if (row==self.tamanho and col==0):
+                self.tablel[row][col]=[1100,1]
+            if (row==self.tamanho and col==self.tamanho):
+                self.tablel[row][col]=[1001,1]
+        
+
+    def hipostese_int(self,row:int,col:int):
         peca=self.tablel[row][col]
+        if (peca[1]==1):
+            return
         direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
         dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
-        ligi=0
         for i in range(4):
-                if (direcoes[i]==1 & dirpeca[i]==1):
-                    ligi+=1
-        mal=1
+            
 
-        while(mal==1):
-            for i in range(4):
-                if (direcoes[i]==-1 & dirpeca[i]==1):
-                    self.roda(self,row,col,1)
-                    peca=self.tablel[row][col]
-                    dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
 
-                else:
-                    mal=0
-                    break
-        lig=0
-        lig_total=0
-        for i in range(4):
-                if (direcoes[i]==1 & dirpeca[i]==1):
-                    lig+=1
-                if (dirpeca[i]==1):
-                    lig_total+=1
-        self.calcula_pontos((lig-ligi)/lig_total*-(max(row,self.tamanho-row)+max(col,self.tamanho-col)+1)**2)
+
 
         
     def ligacoes(self,row:int , col:int)->int :
@@ -258,33 +274,33 @@ class Board:
             table_lig.append([])
             for i in line:
                 if i== "FC":
-                    table_lig[j].append(1000)
+                    table_lig[j].append([1000,0])
                 elif i== "FB":
-                    table_lig[j].append(100)
+                    table_lig[j].append([100,0])
                 elif i== "FE":
-                    table_lig[j].append(10)
+                    table_lig[j].append([10,0])
                 elif i== "FD":
-                    table_lig[j].append(1)
+                    table_lig[j].append([1,0])
                 elif i== "BC":
-                    table_lig[j].append(1101)
+                    table_lig[j].append([1101,0])
                 elif i== "BB":
-                    table_lig[j].append(1110)
+                    table_lig[j].append([1110,0])
                 elif i== "BE":
-                    table_lig[j].append(111)
+                    table_lig[j].append([111,0])
                 elif i== "BD":
-                    table_lig[j].append(1011)
+                    table_lig[j].append([1011,0])
                 elif i== "VC":
-                    table_lig[j].append(1001)
+                    table_lig[j].append([1001,0])
                 elif i== "VB":
-                    table_lig[j].append(110)
+                    table_lig[j].append([110,0])
                 elif i== "VE":
-                    table_lig[j].append(11)
+                    table_lig[j].append([11,0])
                 elif i== "VD":
-                    table_lig[j].append(1100)
+                    table_lig[j].append([1100,0])
                 elif i== "LH":
-                    table_lig[j].append(101)
+                    table_lig[j].append([101,0])
                 elif i== "LV":
-                    table_lig[j].append(1010)
+                    table_lig[j].append([1010,0])
             j=j+1
         tamanho=len(table_lig)
         pontos=0
