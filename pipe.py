@@ -35,9 +35,15 @@ class PipeManiaState:
 
 class Board:
     
-    def __init__(self,tablel):
+    def __init__(self,tablel,pontos):
         self.tablel=tablel
         self.tamanho=len(self.tablel)
+        pontos=0
+        self.pontos=pontos
+
+
+    def calcula_pontos(self,pontos:int):
+            self.pontos+=pontos
 
     
         
@@ -180,20 +186,36 @@ class Board:
             nova=peca//1000+ peca%1000//100*1000+peca%100//10*100+peca%10*10
 
         self.tablel[row][col]=nova
+    
 
-    def hipostese(self,row:int,col:int):
+    def hipostese(self,row:int,col:int)-> int:
         peca=self.tablel[row][col]
         direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
         dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+        ligi=0
+        for i in range(4):
+                if (direcoes[i]==1 & dirpeca[i]==1):
+                    ligi+=1
         mal=1
+
         while(mal==1):
             for i in range(4):
                 if (direcoes[i]==-1 & dirpeca[i]==1):
                     self.roda(self,row,col,1)
                     peca=self.tablel[row][col]
+                    dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+
                 else:
                     mal=0
                     break
+        lig=0
+        lig_total=0
+        for i in range(4):
+                if (direcoes[i]==1 & dirpeca[i]==1):
+                    lig+=1
+                if (dirpeca[i]==1):
+                    lig_total+=1
+        self.calcula_pontos((lig-ligi)/lig_total*-(max(row,self.tamanho-row)+max(col,self.tamanho-col)+1)**2)
 
         
     def ligacoes(self,row:int , col:int)->int :
@@ -201,10 +223,22 @@ class Board:
         direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
         dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
         lig=0
+        lig_total=0
         for i in range(4):
                 if (direcoes[i]==1 & dirpeca[i]==1):
                     lig+=1
-        return lig
+                if (dirpeca[i]==1):
+                    lig_total+=1
+        return lig/lig_total
+    
+    def calcula_pontos_tudo(self):
+        for i in range(self.tamanho):
+            for j in range(self.tamanho):
+                self.calcula_pontos(self.ligacoes(self,i,j)*-(max(i,self.tamanho-i)+max(j,self.tamanho-j)+1)**2)
+
+
+
+
 
 
 
@@ -215,14 +249,13 @@ class Board:
 
     @staticmethod
     def parse_instance():
-        table = []
         table_lig=[]
         j=0
         while 1:
             line= sys.stdin.readline().split()
             if line== "":
                 break
-            table.append([])
+            table_lig.append([])
             for i in line:
                 if i== "FC":
                     table_lig[j].append(1000)
@@ -253,8 +286,13 @@ class Board:
                 elif i== "LV":
                     table_lig[j].append(1010)
             j=j+1
+        tamanho=len(table_lig)
+        pontos=0
+        for i in range(tamanho):
+            for j in range(tamanho):
+                pontos+=  (max(i,tamanho-i)+max(j,tamanho-j)+1)**2
 
-        return Board(Board,table_lig)
+        return Board(Board,table_lig,pontos)
 
     # TODO: outros metodos da classe
 
@@ -267,13 +305,13 @@ class PipeMania(Problem):
         pass
 
     def inferencia(self, state: PipeManiaState):
-        tamanho=range(len(self.Board.table_len(self.Board)))
-            #cantos
+        tamanho=self.Board.table_len(self.Board)
         for i in range(tamanho):
             self.Board.hipostese(self.Board,0,i)
             self.Board.hipostese(self.Board,tamanho,i)
             self.Board.hipostese(self.Board,i,0)
             self.Board.hipostese(self.Board,i,tamanho)
+        
 
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
@@ -281,8 +319,11 @@ class PipeMania(Problem):
         pass
     
 
-    def actions(self, state: PipeManiaState):
+    def actions(self, state: PipeManiaState,row:int,col:int):
         list_actions=[]
+
+
+
         
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
