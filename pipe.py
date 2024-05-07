@@ -35,9 +35,9 @@ class PipeManiaState:
 
 class Board:
     
-    def __init__(self, table,tablel):
-        self.table = table
+    def __init__(self,tablel):
         self.tablel=tablel
+        self.tamanho=len(self.tablel)
 
     
         
@@ -85,10 +85,10 @@ class Board:
         return self.table[row][col]
     
     def get_value_num_l(self, row: int, col: int) -> int:
-        tamanho=len(self.table)
+        tamanho=len(self.tablel)
         if (row<0 or row>tamanho-1 or col<0 or col>tamanho-1):
             return 0
-        return self.table[row][col]
+        return self.tablel[row][col]
     
     def change_value_num(self, row: int, col: int,peca: int):
         tamanho=len(self.table)
@@ -129,12 +129,89 @@ class Board:
         respectivamente."""
         # TODO
         pass
+    
+
 
     def table_len(self) -> int:
-        return len(self.table)
+        return self.tamanho
     
     # TODO
     pass
+    def quero_cima(self, row: int, col: int) -> int:
+        ligacao= -1
+        if not (row > self.tamanho | row-1 < 0 | col > self.tamanho | col<0):
+            ligacao= self.tablel[row-1][col]
+            return ligacao%100//10
+        return ligacao
+        # TODO
+        pass
+    def quero_baixo(self, row: int, col: int) -> int:
+        ligacao= -1
+        if not (row+1 > self.tamanho | row < 0 | col > self.tamanho | col<0):
+            ligacao= self.tablel[row+1][col]
+            return ligacao//1000
+        return ligacao
+        # TODO
+        pass
+    def quero_direita(self, row: int, col: int) -> int:
+        ligacao= -1
+        if not (row > self.tamanho | row < 0 | col+1 > self.tamanho | col<0):
+            ligacao= self.tablel[row][col+1]
+            return ligacao%10
+        return ligacao
+        pass
+    def quero_esquerda(self, row: int, col: int) -> int:
+        ligacao= -1
+        if not (row > self.tamanho | row < 0 | col > self.tamanho | col-1<0):
+            ligacao= self.tablel[row][col-1]
+            return ligacao%1000//100
+        return ligacao
+        # TODO
+        pass
+
+
+    def roda(self, row: int , col: int , rotacao: int ):
+        peca=self.tablel[row][col]
+        if rotacao==1:
+            nova=peca%10*1000+ peca//1000*100+peca%1000//100*10+peca%100//10
+        if rotacao==2:
+            nova= peca//1000*10+ peca%1000//100+ peca%100//10*1000 +peca%10*100
+        if rotacao==3:
+            nova=peca//1000+ peca%1000//100*1000+peca%100//10*100+peca%10*10
+
+        self.tablel[row][col]=nova
+
+    def hipostese(self,row:int,col:int):
+        peca=self.tablel[row][col]
+        direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
+        dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+        mal=1
+        while(mal==1):
+            for i in range(4):
+                if (direcoes[i]==-1 & dirpeca[i]==1):
+                    self.roda(self,row,col,1)
+                    peca=self.tablel[row][col]
+                else:
+                    mal=0
+                    break
+
+        
+    def ligacoes(self,row:int , col:int)->int :
+        peca=self.tablel[row][col]
+        direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
+        dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+        lig=0
+        for i in range(4):
+                if (direcoes[i]==1 & dirpeca[i]==1):
+                    lig+=1
+        return lig
+
+
+
+
+
+
+
 
     @staticmethod
     def parse_instance():
@@ -177,7 +254,7 @@ class Board:
                     table_lig[j].append(1010)
             j=j+1
 
-        return Board(Board,table,table_lig)
+        return Board(Board,table_lig)
 
     # TODO: outros metodos da classe
 
@@ -191,59 +268,12 @@ class PipeMania(Problem):
 
     def inferencia(self, state: PipeManiaState):
         tamanho=range(len(self.Board.table_len(self.Board)))
-        for i in range(tamanho) :
-            for j in range(tamanho):
-                if (i== 0 or i==tamanho-1 or j==0 or j==tamanho-1):
-                    lateral=1
-                pecat=PipeMania.get_value_num(PipeMania,i,j)
-                peca=pecat/100
-                if pecat%100 == 0:
-                    vertical= self.Board.adjacent_vertical_values_num(self.Board,i,j)
-                    horizontal= self.Board.adjacent_horizontal_values_num(self.Board,i,j)
-                    top=vertical[0]
-                    bot=vertical[1]
-                    dir=horizontal[0]
-                    esq=horizontal[1]
-                    if  peca==1:
-                        pass
-                    elif  peca==2:
-                        if i==0:
-                                if j==0:
-                                    self.Board.change_value_num(self.Board,i,j,221)
-                                elif j==tamanho:
-                                    self.Board.change_value_num(self.Board,i,j,231)
-                        elif i==tamanho:
-                                if j==0:
-                                    self.Board.change_value_num(self.Board,i,j,241)
-                                elif j==tamanho:
-                                    self.Board.change_value_num(self.Board,i,j,211)
-
-
-                        pass
-                    elif  peca==3:
-                            if i==0:
-                                self.Board.change_value_num(self.Board,i,j,331)
-                            elif i==tamanho:
-                                self.Board.change_value_num(self.Board,i,j,311)
-                            elif j==tamanho:
-                                self.Board.change_value_num(self.Board,i,j,341)
-                            elif j==0:
-                                self.Board.change_value_num(self.Board,i,j,311)
-                    elif  peca==4:
-                            if i==0:
-                                self.Board.change_value_num(self.Board,i,j,411)
-                            elif i==tamanho:
-                                self.Board.change_value_num(self.Board,i,j,411)
-                            elif j==tamanho:
-                                self.Board.change_value_num(self.Board,i,j,421)
-                            elif j==0:
-                                self.Board.change_value_num(self.Board,i,j,421)
-
-                break
-            break
-
-                
-                
+            #cantos
+        for i in range(tamanho):
+            self.Board.hipostese(self.Board,0,i)
+            self.Board.hipostese(self.Board,tamanho,i)
+            self.Board.hipostese(self.Board,i,0)
+            self.Board.hipostese(self.Board,i,tamanho)
 
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
