@@ -227,8 +227,45 @@ class Board:
             return
         direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
         dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+        ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
+        postos=[0,0,0,0]
         for i in range(4):
-            
+            if(direcoes[i]==[1,1]):
+                postos[i]=1
+            elif(direcoes[i]==[1,0]):
+                postos[i]=0
+            elif(direcoes[i][0]==[0,1]):
+                postos[i]=-1
+        q=-1
+        eu_quero=1
+        while(eu_quero==1):
+            q+=1
+            t=q
+            for i in range(4):
+                if(i+t>4):
+                    t=0
+                if postos[i+t]==1 and dirpeca[i]!=1:
+                    break
+                elif postos[i+t]==-1 and dirpeca[i]!=0:
+                    break
+                t+=1
+                if (i==3):
+                    eu_quero=0
+        contador=0
+        for i in postos:
+            if (i==1):
+                contador+=1
+        
+        if (contador==ligacao):
+            return [q,1]
+        else:
+            return[q,0]
+
+                
+
+
+                
+
 
 
 
