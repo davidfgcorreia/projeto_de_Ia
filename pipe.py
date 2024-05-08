@@ -84,58 +84,17 @@ class Board:
             
             pass
     
-    def get_value_num(self, row: int, col: int) -> int:
-        tamanho=len(self.table)
-        if (row<0 or row>tamanho-1 or col<0 or col>tamanho-1):
-            return 0
-        return self.table[row][col]
-    
     def get_value_num_l(self, row: int, col: int) -> int:
         tamanho=len(self.tablel)
         if (row<0 or row>tamanho-1 or col<0 or col>tamanho-1):
             return 0
         return self.tablel[row][col]
     
-    def change_value_num(self, row: int, col: int,peca: int):
-        tamanho=len(self.table)
-        if (row<0 or row>tamanho-1 or col<0 or col>tamanho-1):
-            return 0
-        self.table[row][col]=peca
 
     """Devolve o valor na respetiva posição do tabuleiro."""
     # TODO
     pass
 
-    def adjacent_vertical_values(self, row: int, col: int) -> tuple[str, str]:
-        return (self.get_value(self,row-1,col),self.get_value(self,row+1,col))
-
-        """Devolve os valores imediatamente acima e abaixo,
-        respectivamente."""
-        # TODO
-        pass
-
-    def adjacent_horizontal_values(self, row: int, col: int) -> tuple[str, str]:
-        return (self.get_value(self,row,col-1),self.get_value(self,row,col+1))
-        """Devolve os valores imediatamente à esquerda e à direita,
-        respectivamente."""
-        # TODO
-        pass
-    
-    def adjacent_vertical_values_num(self, row: int, col: int) -> tuple[tuple[int, int],tuple[int,int]]:
-        return ((self.get_value_num(self,row-1,col),self.get_value_num_l(self,row-1,col)),(self.get_value_num(self,row+1,col),self.get_value_num_l(self,row+1,col)))
-
-        """Devolve os valores imediatamente acima e abaixo,
-        respectivamente."""
-        # TODO
-        pass
-
-    def adjacent_horizontal_values_num(self, row: int, col: int) -> tuple[tuple[int, int],tuple[int,int]]:
-        return ((self.get_value_num(self,row,col-1),self.get_value_num_l(self,row,col-1)),(self.get_value_num(self,row,col+1),self.get_value_num_l(self,row,col+1)))
-        """Devolve os valores imediatamente à esquerda e à direita,
-        respectivamente."""
-        # TODO
-        pass
-    
 
 
     def table_len(self) -> int:
@@ -176,7 +135,7 @@ class Board:
         pass
 
 
-    def roda(self, row: int , col: int , rotacao: int ):
+    def roda(self, row: int , col: int , rotacao: int,estado:int ):
         peca=self.tablel[row][col][0]
         if rotacao==1:
             nova=peca%10*1000+ peca//1000*100+peca%1000//100*10+peca%100//10
@@ -185,7 +144,7 @@ class Board:
         if rotacao==3:
             nova=peca//1000+ peca%1000//100*1000+peca%100//10*100+peca%10*10
 
-        self.tablel[row][col][0]=nova
+        self.tablel[row][col]=[nova,estado]
     
 
     def hipostese(self,row:int,col:int):
@@ -257,9 +216,9 @@ class Board:
                 contador+=1
         
         if (contador==ligacao):
-            return [q,1]
+            self.roda(self,row,col,q,1)
         else:
-            return[q,0]
+            self.roda(self,row,col,q,0)
 
                 
 
@@ -283,11 +242,7 @@ class Board:
                 if (dirpeca[i]==1):
                     lig_total+=1
         return lig/lig_total
-    
-    def calcula_pontos_tudo(self):
-        for i in range(self.tamanho):
-            for j in range(self.tamanho):
-                self.calcula_pontos(self.ligacoes(self,i,j)*-(max(i,self.tamanho-i)+max(j,self.tamanho-j)+1)**2)
+
 
 
 
