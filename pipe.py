@@ -105,31 +105,31 @@ class Board:
     def quero_cima(self, row: int, col: int) -> int:
         ligacao= -1
         if not (row > self.tamanho | row-1 < 0 | col > self.tamanho | col<0):
-            ligacao= self.tablel[row-1][col][0]
-            return ligacao%100//10
+            ligacao= self.tablel[row-1][col]
+            return [ligacao[0]%100//10,ligacao[1]]
         return ligacao
         # TODO
         pass
     def quero_baixo(self, row: int, col: int) -> int:
         ligacao= -1
         if not (row+1 > self.tamanho | row < 0 | col > self.tamanho | col<0):
-            ligacao= self.tablel[row+1][col][0]
-            return ligacao//1000
+            ligacao= self.tablel[row+1][col]
+            return [ligacao[0]//1000,ligacao[1]]
         return ligacao
         # TODO
         pass
     def quero_direita(self, row: int, col: int) -> int:
         ligacao= -1
         if not (row > self.tamanho | row < 0 | col+1 > self.tamanho | col<0):
-            ligacao= self.tablel[row][col+1][0]
-            return ligacao%10
+            ligacao= self.tablel[row][col+1]
+            return [ligacao[0]%10,ligacao[1]]
         return ligacao
         pass
     def quero_esquerda(self, row: int, col: int) -> int:
         ligacao= -1
         if not (row > self.tamanho | row < 0 | col > self.tamanho | col-1<0):
-            ligacao= self.tablel[row][col-1][0]
-            return ligacao%1000//100
+            ligacao= self.tablel[row][col-1]
+            return [ligacao[0]%1000//100,ligacao[1]]
         return ligacao
         # TODO
         pass
@@ -179,37 +179,64 @@ class Board:
             if (row==self.tamanho and col==self.tamanho):
                 self.tablel[row][col]=[1001,1]
         
+    def busca_tipos(self,row:int,col:int):
+        ligacao=[[-1,-1,-1,-1],[0,0,0,0]]
+        if not(row > self.tamanho | row-1 < 0 | col > self.tamanho | col<0):
+            ligacao[0][0]= self.tablel[row-1][col]
+            ligacao[1][0]=(str(ligacao[0][0][0]).count('1')==1)
+        if not (row+1 > self.tamanho | row < 0 | col > self.tamanho | col<0):
+            ligacao[0][1]= self.tablel[row+1][col][0]
+            ligacao[1][1]=(str(ligacao[0][0][0]).count('1')==1)
+        if not (row > self.tamanho | row < 0 | col+1 > self.tamanho | col<0):
+            ligacao[0][2]= self.tablel[row][col+1]
+            ligacao[1][2]=(str(ligacao[0][0][0]).count('1')==1)
+        if not (row > self.tamanho | row < 0 | col > self.tamanho | col-1<0):
+            ligacao[0][3]= self.tablel[row][col-1]
+            ligacao[1][3]=(str(ligacao[0][0][0]).count('1')==1)
+        return ligacao
+
+
 
     def hipostese_int(self,row:int,col:int):
         peca=self.tablel[row][col]
         if (peca[1]==1):
             return
-        direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
         dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
         ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
         postos=[0,0,0,0]
+        if ligacao==1:
+            direcoesl=self.busca_tipos(self,row,col)
+            direcoes=direcoesl[0]
+            tipos=direcoesl[1]
+        else:
+            direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
         for i in range(4):
             if(direcoes[i]==[1,1]):
                 postos[i]=1
             elif(direcoes[i]==[1,0]):
                 postos[i]=0
-            elif(direcoes[i][0]==[0,1]):
+            elif(direcoes[i]==[0,1]):
                 postos[i]=-1
-        q=-1
-        eu_quero=1
-        while(eu_quero==1):
-            q+=1
-            t=q
-            for i in range(4):
-                if(i+t>4):
-                    t=0
-                if postos[i+t]==1 and dirpeca[i]!=1:
+            elif(direcoes[i]==-1):
+                postos[i]=-1
+            if ligacao==1:
+                if tipos[i]:
+                    postos[i]=-1
+            
+        lista=[]
+        for i in range(4):
+            for j in range(4):
+                t=j+i
+                if(t>3):
+                    t-=3
+                if postos[t]==1 and dirpeca[j]!=1:
                     break
-                elif postos[i+t]==-1 and dirpeca[i]!=0:
+                elif postos[t]==-1 and dirpeca[j]!=0:
                     break
-                t+=1
-                if (i==3):
-                    eu_quero=0
+                lista.append(i)
+
+
+            
         contador=0
         for i in postos:
             if (i==1):
