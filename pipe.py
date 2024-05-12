@@ -6,6 +6,7 @@
 # 00000 Nome1
 # 00000 Nome2
 import sys
+import copy
 from search import (
     Problem,
     Node,
@@ -35,18 +36,10 @@ class PipeManiaState:
 
 class Board:
     
-    def __init__(self,tablel,pontos):
+    def __init__(self,tablel):
         self.tablel=tablel
         self.tamanho=len(self.tablel)
-        pontos=0
-        self.pontos=pontos
-
-
-    def calcula_pontos(self,pontos:int):
-            self.pontos+=pontos
-
-    
-        
+        self.lista_proximo=[]  
     """Representação interna de um tabuleiro de PipeMania."""
 
     def get_value(self, row: int, col: int) -> str:
@@ -84,18 +77,12 @@ class Board:
             
             pass
     
-    def get_value_num_l(self, row: int, col: int) -> int:
+    def get_value_num_l(self, row: int, col: int) -> tuple[int,int]:
         tamanho=len(self.tablel)
         if (row<0 or row>tamanho-1 or col<0 or col>tamanho-1):
             return 0
         return self.tablel[row][col]
-    
-
     """Devolve o valor na respetiva posição do tabuleiro."""
-    # TODO
-    pass
-
-
 
     def table_len(self) -> int:
         return self.tamanho
@@ -155,52 +142,64 @@ class Board:
         if ligacao==2:
             if (dirpeca[0]==dirpeca[2]|dirpeca[1]==dirpeca[3]):
                 ligacao=4
+                self.lista_proximo.append([row,col])
         if ligacao==3:
             if row==0:
                 self.tablel[row][col]=[111,1]
+                self.lista_proximo.append([row,col])
             elif row== self.tamanho:
                 self.tablel[row][col]=[1101,1]
+                self.lista_proximo.append([row,col])
             elif col==0:
                 self.tablel[row][col]=[1110,1]
+                self.lista_proximo.append([row,col])
             elif col==self.tamanho:
                 self.tablel[row][col]=[1011,1]
+                self.lista_proximo.append([row,col])
         elif ligacao==4:
             if row==0 or row == self.tamanho:
                 self.tablel[row][col]=[101,1]
+                self.lista_proximo.append([row,col])
             elif col==0 or col == self.tamanho:
                 self.tablel[row][col]=[1010,1]
+                self.lista_proximo.append([row,col])
         elif ligacao==2:
             if (row==0 and col==0):
                 self.tablel[row][col]=[110,1]
+                self.lista_proximo.append([row,col])
             if (row==0 and col==self.tamanho):
                 self.tablel[row][col]=[11,1]
+                self.lista_proximo.append([row,col])
             if (row==self.tamanho and col==0):
                 self.tablel[row][col]=[1100,1]
+                self.lista_proximo.append([row,col])
             if (row==self.tamanho and col==self.tamanho):
                 self.tablel[row][col]=[1001,1]
+                self.lista_proximo.append([row,col])
         
     def busca_tipos(self,row:int,col:int):
-        ligacao=[[-1,-1,-1,-1],[0,0,0,0]]
+        ligacao=[[[-1,-1],-[-1,-1],[-1,-1],[-1,-1]],[False,False,False,False]]
         if not(row > self.tamanho | row-1 < 0 | col > self.tamanho | col<0):
             ligacao[0][0]= self.tablel[row-1][col]
-            ligacao[1][0]=(str(ligacao[0][0][0]).count('1')==1)
+            ligacao[1][0]=(str(ligacao[0][0][0]).count('1')==True)
         if not (row+1 > self.tamanho | row < 0 | col > self.tamanho | col<0):
             ligacao[0][1]= self.tablel[row+1][col][0]
-            ligacao[1][1]=(str(ligacao[0][0][0]).count('1')==1)
+            ligacao[1][1]=(str(ligacao[0][0][0]).count('1')==True)
         if not (row > self.tamanho | row < 0 | col+1 > self.tamanho | col<0):
             ligacao[0][2]= self.tablel[row][col+1]
-            ligacao[1][2]=(str(ligacao[0][0][0]).count('1')==1)
+            ligacao[1][2]=(str(ligacao[0][0][0]).count('1')==True)
         if not (row > self.tamanho | row < 0 | col > self.tamanho | col-1<0):
             ligacao[0][3]= self.tablel[row][col-1]
-            ligacao[1][3]=(str(ligacao[0][0][0]).count('1')==1)
+            ligacao[1][3]=(str(ligacao[0][0][0]).count('1')==True)
         return ligacao
 
 
 
-    def hipostese_int(self,row:int,col:int):
-        peca=self.tablel[row][col]
+    def hipostese_int(self,row:int,col:int, list_actions: list):
+        pecat=self.tablel[row][col]
         if (peca[1]==1):
             return
+        peca=pecat[0]
         dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
         ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
         postos=[0,0,0,0]
@@ -217,7 +216,7 @@ class Board:
                 postos[i]=0
             elif(direcoes[i]==[0,1]):
                 postos[i]=-1
-            elif(direcoes[i]==-1):
+            elif(direcoes[i]==[-1,-1]):
                 postos[i]=-1
             if ligacao==1:
                 if tipos[i]:
@@ -236,27 +235,20 @@ class Board:
                 lista.append(i)
 
 
-            
-        contador=0
-        for i in postos:
-            if (i==1):
-                contador+=1
-        
-        if (contador==ligacao):
-            self.roda(self,row,col,q,1)
+        if (len(lista)==1):
+            self.roda(self,row,col,lista[0],1)
+            self.lista_proximo.append([row,col])
         else:
-            self.roda(self,row,col,q,0)
+            list_actions.append([lista,[row,col]])
 
                 
 
-
+    def get_lista_proximo(self):
+        return self.lista_proximo
                 
 
 
 
-
-
-        
     def ligacoes(self,row:int , col:int)->int :
         peca=self.tablel[row][col]
         direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
@@ -272,7 +264,13 @@ class Board:
 
 
 
+    def place_piece(self, row: int, col: int, value: int) -> "Board":
+            """Devolve um novo tabuleiro com o valor colocado na posição indicada."""
+            new_table  = copy.deepcopy(self.tablel)
+            new_board = Board(new_table)
+            new_board.roda(new_board,row,col,value,1)
 
+            return new_board
 
 
 
@@ -321,13 +319,8 @@ class Board:
                 elif i== "LV":
                     table_lig[j].append([1010,0])
             j=j+1
-        tamanho=len(table_lig)
-        pontos=0
-        for i in range(tamanho):
-            for j in range(tamanho):
-                pontos+=  (max(i,tamanho-i)+max(j,tamanho-j)+1)**2
 
-        return Board(Board,table_lig,pontos)
+        return Board(Board,table_lig)
 
     # TODO: outros metodos da classe
 
@@ -339,13 +332,18 @@ class PipeMania(Problem):
         # TODO
         pass
 
-    def inferencia(self, state: PipeManiaState):
+    def inferencia(self, state1: PipeManiaState,state:Board):#isto em vez de board tem que se usar o pipestate
         tamanho=self.Board.table_len(self.Board)
         for i in range(tamanho):
-            self.Board.hipostese(self.Board,0,i)
-            self.Board.hipostese(self.Board,tamanho,i)
-            self.Board.hipostese(self.Board,i,0)
-            self.Board.hipostese(self.Board,i,tamanho)
+            state.hipostese(state,0,i)
+            state.hipostese(state,tamanho,i)
+            state.hipostese(state,i,0)
+            state.hipostese(state,i,tamanho)
+        lista_proximo= state.get_lista_proximo
+        while(len(lista_proximo)!=0):
+            ponto=lista_proximo.pop(0)
+            state.hipostese_int(state, ponto[0],ponto[1],lista_proximo)
+
         
 
         """Retorna uma lista de ações que podem ser executadas a
@@ -354,17 +352,18 @@ class PipeMania(Problem):
         pass
     
 
-    def actions(self, state: PipeManiaState,row:int,col:int):
-        list_actions=[]
-
-
-
-        
+    def actions(self, state1: PipeManiaState,row:int,col:int,state:Board):
+        lista_proximo=state.get_lista_proximo
+        for i in range(len(lista_proximo)):
+            if (state.get_value(lista_proximo[i][1][0],lista_proximo[i][1][1])[1]==1):
+                lista_proximo.pop(i)
+            if(len(lista_proximo[i][0])==2):
+                return lista_proximo[i]
+        return lista_proximo[0]   
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
         # TODO
         pass
-
     def result(self, state: PipeManiaState, action):
         """Retorna o estado resultante de executar a 'action' sobre
         'state' passado como argumento. A ação a executar deve ser uma
