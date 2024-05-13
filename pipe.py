@@ -6,7 +6,6 @@
 # 00000 Nome1
 # 00000 Nome2
 import sys
-import copy
 from search import (
     Problem,
     Node,
@@ -126,10 +125,12 @@ class Board:
         peca=self.tablel[row][col][0]
         if rotacao==1:
             nova=peca%10*1000+ peca//1000*100+peca%1000//100*10+peca%100//10
-        if rotacao==2:
+        elif rotacao==2:
             nova= peca//1000*10+ peca%1000//100+ peca%100//10*1000 +peca%10*100
-        if rotacao==3:
+        elif rotacao==3:
             nova=peca//1000+ peca%1000//100*1000+peca%100//10*100+peca%10*10
+        elif rotacao==4:
+            nova=peca
 
         self.tablel[row][col]=[nova,estado]
     
@@ -233,6 +234,10 @@ class Board:
                 elif postos[t]==-1 and dirpeca[j]!=0:
                     break
                 lista.append(i)
+        
+        if (peca==1010 or peca==101)and len(lista)==2:
+            lista.pop()
+            
 
 
         if (len(lista)==1):
@@ -264,7 +269,7 @@ class Board:
 
 
 
-    def place_piece(self, row: int, col: int, value: int) -> "Board":
+    def place_piece(self, row: int, col: int, value: int) -> "Board":#temos que fazer o copy normal nao podemos usar o deep
             """Devolve um novo tabuleiro com o valor colocado na posição indicada."""
             new_table  = copy.deepcopy(self.tablel)
             new_board = Board(new_table)
@@ -325,6 +330,54 @@ class Board:
     # TODO: outros metodos da classe
 
 
+
+def criar_grafo(board:Board):
+    lista_de_listas=board.tablel
+    grafo = {}
+    
+    # Iterar sobre a lista de listas e adicionar os nós ao grafo
+    for i in range(len(lista_de_listas)):
+        for j in range(len(lista_de_listas[i])):
+            node = (i,j)  # Converter lista em tupla
+            if node not in grafo:
+                grafo[node] = set()
+            peca=board.get_value(board,i,j)[0]
+            direcoes=[board.quero_cima(board,i,j),board.quero_direita(board,i,j),board.quero_baixo(board,i,j),board.quero_esquerda(board,i,j)]
+            # Adicionar conexões com os elementos adjacentes
+            if (direcoes[0]==peca//1000):
+                grafo[node].add((i-1,j))
+            if (direcoes[0]==peca%1000//100):
+                grafo[node].add((i+1,j))
+            if(direcoes[0]==peca%100//10):
+                grafo[node].add((i,j-1))
+            if (direcoes[0]==peca%10):
+                grafo[node].add((i,j+1))
+                
+    return grafo
+
+
+def dfs_iterativa(grafo, inicio, visitados):
+    pilha = [inicio]
+    
+    while pilha:
+        vertice = pilha.pop()
+        if vertice not in visitados:
+            visitados.add(vertice)
+            pilha.extend(grafo[vertice] - visitados)
+
+def verifica_conexao_total(grafo):
+    todos_nos = set(grafo.keys())
+    visitados = set()
+    
+    # Realiza a busca em profundidade iterativa a partir de qualquer nó
+    for i in todos_nos:
+        if i not in visitados:
+            dfs_iterativa(grafo,i, visitados)
+            break
+    # Verifica se todos os nós foram visitados
+    return visitados == todos_nos
+
+
 class PipeMania(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
@@ -357,7 +410,7 @@ class PipeMania(Problem):
         for i in range(len(lista_proximo)):
             if (state.get_value(lista_proximo[i][1][0],lista_proximo[i][1][1])[1]==1):
                 lista_proximo.pop(i)
-            if(len(lista_proximo[i][0])==2):
+            elif(len(lista_proximo[i][0])==2):
                 return lista_proximo[i]
         return lista_proximo[0]   
         """Retorna uma lista de ações que podem ser executadas a
@@ -371,6 +424,7 @@ class PipeMania(Problem):
         self.actions(state)."""
         # TODO
         pass
+
 
     def goal_test(self, state: PipeManiaState):
         """Retorna True se e só se o estado passado como argumento é
