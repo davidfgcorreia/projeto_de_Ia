@@ -33,249 +33,207 @@ class PipeManiaState:
     # TODO: outros metodos da classe
 
 
-class Board:
-    
-    def __init__(self,tablel):
-        self.tablel=tablel
-        self.tamanho=len(self.tablel)
-        self.lista_proximo=[]  
-    """Representação interna de um tabuleiro de PipeMania."""
 
-    def get_value(self, row: int, col: int) -> str:
-            tamanho=len(self.table)
-            if (row<0 or row>tamanho-1 or col<0 or col>tamanho-1):
-                return 0
-            if self.table[row][col]/10 == 11:
-                return "FC"
-            elif self.table[row][col]/10 == 12:
-                return "FB"
-            elif self.table[row][col]/10 == 13:
-                return "FE"
-            elif self.table[row][col]/10 == 14:
-                return "FD"
-            elif self.table[row][col]/10 == 31:
-                return "BC"
-            elif self.table[row][col]/10 == 32:
-                return "BB"
-            elif self.table[row][col]/10 == 33:
-                return "BE"
-            elif self.table[row][col]/10 == 34:
-                return "BD"
-            elif self.table[row][col]/10 == 21:
-                return "VC"
-            elif self.table[row][col]/10 == 22:
-                return "VB"
-            elif self.table[row][col]/10 == 23:
-                return "VE"
-            elif self.table[row][col]/10 == 24:
-                return "VD"
-            elif self.table[row][col]/10 == 41:
-                return "LH"
-            elif self.table[row][col]/10 == 42:
-                return "LV"
-            
-            pass
-    
-    def get_value_num_l(self, row: int, col: int) -> tuple[int,int]:
-        tamanho=len(self.tablel)
-        if (row<0 or row>tamanho-1 or col<0 or col>tamanho-1):
-            return 0
-        return self.tablel[row][col]
-    """Devolve o valor na respetiva posição do tabuleiro."""
 
-    def table_len(self) -> int:
-        return self.tamanho
-    
+
+def get_value_num_l(self:list, row: int, col: int) -> tuple[int,int]:
+    tamanho=len(self)
+    if (row<0 or row>tamanho-1 or col<0 or col>tamanho-1):
+        return 0
+    return self[row][col]
+"""Devolve o valor na respetiva posição do tabuleiro."""
+
+
+# TODO
+pass
+def quero_cima(table:list, row: int, col: int) -> int:
+    tamanho=len(table)
+    ligacao= [-1,-1]
+    if not (row > tamanho | row-1 < 0 | col > tamanho | col<0):
+        ligacao= table[row-1][col]
+        return [ligacao[0]%100//10,ligacao[1]]
+    return ligacao
     # TODO
     pass
-    def quero_cima(self, row: int, col: int) -> int:
-        ligacao= -1
-        if not (row > self.tamanho | row-1 < 0 | col > self.tamanho | col<0):
-            ligacao= self.tablel[row-1][col]
-            return [ligacao[0]%100//10,ligacao[1]]
-        return ligacao
-        # TODO
-        pass
-    def quero_baixo(self, row: int, col: int) -> int:
-        ligacao= -1
-        if not (row+1 > self.tamanho | row < 0 | col > self.tamanho | col<0):
-            ligacao= self.tablel[row+1][col]
-            return [ligacao[0]//1000,ligacao[1]]
-        return ligacao
-        # TODO
-        pass
-    def quero_direita(self, row: int, col: int) -> int:
-        ligacao= -1
-        if not (row > self.tamanho | row < 0 | col+1 > self.tamanho | col<0):
-            ligacao= self.tablel[row][col+1]
-            return [ligacao[0]%10,ligacao[1]]
-        return ligacao
-        pass
-    def quero_esquerda(self, row: int, col: int) -> int:
-        ligacao= -1
-        if not (row > self.tamanho | row < 0 | col > self.tamanho | col-1<0):
-            ligacao= self.tablel[row][col-1]
-            return [ligacao[0]%1000//100,ligacao[1]]
-        return ligacao
-        # TODO
-        pass
+def quero_baixo(table:list ,row: int, col: int) -> int:
+    ligacao= [-1,-1]
+    tamanho=len(table)
+    if not (row+1 > tamanho | row < 0 | col > tamanho | col<0):
+        ligacao= table[row+1][col]
+        return [ligacao[0]//1000,ligacao[1]]
+    return ligacao
+    # TODO
+    pass
+def quero_direita(table:list, row: int, col: int) -> int:
+    ligacao= [-1,-1]
+    tamanho=len(table)
+    if not (row > tamanho | row < 0 | col+1 > tamanho | col<0):
+        ligacao= table[row][col+1]
+        return [ligacao[0]%10,ligacao[1]]
+    return ligacao
+    pass
+def quero_esquerda(table:list, row: int, col: int) -> int:
+    ligacao= [-1,-1]
+    tamanho=len(table)
+    if not (row > tamanho | row < 0 | col > tamanho | col-1<0):
+        ligacao= table[row][col-1]
+        return [ligacao[0]%1000//100,ligacao[1]]
+    return ligacao
+    # TODO
+    pass
 
 
-    def roda(self, row: int , col: int , rotacao: int,estado:int ):
-        peca=self.tablel[row][col][0]
-        if rotacao==1:
-            nova=peca%10*1000+ peca//1000*100+peca%1000//100*10+peca%100//10
-        elif rotacao==2:
-            nova= peca//1000*10+ peca%1000//100+ peca%100//10*1000 +peca%10*100
-        elif rotacao==3:
-            nova=peca//1000+ peca%1000//100*1000+peca%100//10*100+peca%10*10
-        elif rotacao==4:
-            nova=peca
+def roda(table:list , row: int , col: int , rotacao: int,estado:int ):
+    peca=table[row][col][0]
+    if rotacao==1:
+        nova=peca%10*1000+ peca//1000*100+peca%1000//100*10+peca%100//10
+    elif rotacao==2:
+        nova= peca//1000*10+ peca%1000//100+ peca%100//10*1000 +peca%10*100
+    elif rotacao==3:
+        nova=peca//1000+ peca%1000//100*1000+peca%100//10*100+peca%10*10
+    elif rotacao==4:
+        nova=peca
 
-        self.tablel[row][col]=[nova,estado]
+    table[row][col]=[nova,estado]
+
+
+def hipostese(table:list,row:int,col:int,lista_proximo:list):
+    peca=table[row][col][0]
+    dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+    ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
+
+    if ligacao==2:
+        if (dirpeca[0]==dirpeca[2]|dirpeca[1]==dirpeca[3]):
+            ligacao=4
+            lista_proximo.append([row,col])
+    if ligacao==3:
+        if row==0:
+            table[row][col]=[111,1]
+            lista_proximo.append([row,col])
+        elif row== len(table):
+            table[row][col]=[1101,1]
+            lista_proximo.append([row,col])
+        elif col==0:
+            table[row][col]=[1110,1]
+            lista_proximo.append([row,col])
+        elif col==len(table):
+            table[row][col]=[1011,1]
+            lista_proximo.append([row,col])
+    elif ligacao==4:
+        if row==0 or row == len(table):
+            table[row][col]=[101,1]
+            lista_proximo.append([row,col])
+        elif col==0 or col == len(table):
+            table[row][col]=[1010,1]
+            lista_proximo.append([row,col])
+    elif ligacao==2:
+        if (row==0 and col==0):
+            table[row][col]=[110,1]
+            lista_proximo.append([row,col])
+        if (row==0 and col==len(table)):
+            table[row][col]=[11,1]
+            lista_proximo.append([row,col])
+        if (row==len(table) and col==0):
+            table[row][col]=[1100,1]
+            lista_proximo.append([row,col])
+        if (row==len(table) and col==len(table)):
+            table[row][col]=[1001,1]
+            lista_proximo.append([row,col])
     
-
-    def hipostese(self,row:int,col:int):
-        peca=self.tablel[row][col][0]
-        dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
-        ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
-
-        if ligacao==2:
-            if (dirpeca[0]==dirpeca[2]|dirpeca[1]==dirpeca[3]):
-                ligacao=4
-                self.lista_proximo.append([row,col])
-        if ligacao==3:
-            if row==0:
-                self.tablel[row][col]=[111,1]
-                self.lista_proximo.append([row,col])
-            elif row== self.tamanho:
-                self.tablel[row][col]=[1101,1]
-                self.lista_proximo.append([row,col])
-            elif col==0:
-                self.tablel[row][col]=[1110,1]
-                self.lista_proximo.append([row,col])
-            elif col==self.tamanho:
-                self.tablel[row][col]=[1011,1]
-                self.lista_proximo.append([row,col])
-        elif ligacao==4:
-            if row==0 or row == self.tamanho:
-                self.tablel[row][col]=[101,1]
-                self.lista_proximo.append([row,col])
-            elif col==0 or col == self.tamanho:
-                self.tablel[row][col]=[1010,1]
-                self.lista_proximo.append([row,col])
-        elif ligacao==2:
-            if (row==0 and col==0):
-                self.tablel[row][col]=[110,1]
-                self.lista_proximo.append([row,col])
-            if (row==0 and col==self.tamanho):
-                self.tablel[row][col]=[11,1]
-                self.lista_proximo.append([row,col])
-            if (row==self.tamanho and col==0):
-                self.tablel[row][col]=[1100,1]
-                self.lista_proximo.append([row,col])
-            if (row==self.tamanho and col==self.tamanho):
-                self.tablel[row][col]=[1001,1]
-                self.lista_proximo.append([row,col])
-        
-    def busca_tipos(self,row:int,col:int):
-        ligacao=[[[-1,-1],-[-1,-1],[-1,-1],[-1,-1]],[False,False,False,False]]
-        if not(row > self.tamanho | row-1 < 0 | col > self.tamanho | col<0):
-            ligacao[0][0]= self.tablel[row-1][col]
-            ligacao[1][0]=(str(ligacao[0][0][0]).count('1')==True)
-        if not (row+1 > self.tamanho | row < 0 | col > self.tamanho | col<0):
-            ligacao[0][1]= self.tablel[row+1][col][0]
-            ligacao[1][1]=(str(ligacao[0][0][0]).count('1')==True)
-        if not (row > self.tamanho | row < 0 | col+1 > self.tamanho | col<0):
-            ligacao[0][2]= self.tablel[row][col+1]
-            ligacao[1][2]=(str(ligacao[0][0][0]).count('1')==True)
-        if not (row > self.tamanho | row < 0 | col > self.tamanho | col-1<0):
-            ligacao[0][3]= self.tablel[row][col-1]
-            ligacao[1][3]=(str(ligacao[0][0][0]).count('1')==True)
-        return ligacao
+def busca_tipos(table:list,row:int,col:int):
+    tamanho=len(table)
+    ligacao=[[[-1,-1],-[-1,-1],[-1,-1],[-1,-1]],[False,False,False,False]]
+    if not(row > tamanho | row-1 < 0 | col > tamanho | col<0):
+        ligacao[0][0]= table[row-1][col]
+        ligacao[1][0]=(str(ligacao[0][0][0]).count('1')==True)
+    if not (row+1 > tamanho | row < 0 | col > tamanho | col<0):
+        ligacao[0][1]= table[row+1][col][0]
+        ligacao[1][1]=(str(ligacao[0][0][0]).count('1')==True)
+    if not (row > tamanho | row < 0 | col+1 > tamanho | col<0):
+        ligacao[0][2]= table[row][col+1]
+        ligacao[1][2]=(str(ligacao[0][0][0]).count('1')==True)
+    if not (row > tamanho | row < 0 | col > tamanho | col-1<0):
+        ligacao[0][3]= table[row][col-1]
+        ligacao[1][3]=(str(ligacao[0][0][0]).count('1')==True)
+    return ligacao
 
 
 
-    def hipostese_int(self,row:int,col:int, list_actions: list):
-        pecat=self.tablel[row][col]
-        if (peca[1]==1):
-            return
-        peca=pecat[0]
-        dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
-        ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
-        postos=[0,0,0,0]
+def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:list):
+    pecat=table[row][col]
+    if (peca[1]==1):
+        return
+    peca=pecat[0]
+    dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+    ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
+    postos=[0,0,0,0]
+    if ligacao==1:
+        direcoesl=busca_tipos(table,row,col)
+        direcoes=direcoesl[0]
+        tipos=direcoesl[1]
+    else:
+        direcoes=[quero_cima(table,row,col),quero_direita(table,row,col),quero_baixo(table,row,col),quero_esquerda(table,row,col)]
+    for i in range(4):
+        if(direcoes[i]==[1,1]):
+            postos[i]=1
+        elif(direcoes[i]==[1,0]):
+            postos[i]=0
+        elif(direcoes[i]==[0,1]):
+            postos[i]=-1
+        elif(direcoes[i]==[-1,-1]):
+            postos[i]=-1
         if ligacao==1:
-            direcoesl=self.busca_tipos(self,row,col)
-            direcoes=direcoesl[0]
-            tipos=direcoesl[1]
-        else:
-            direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
-        for i in range(4):
-            if(direcoes[i]==[1,1]):
-                postos[i]=1
-            elif(direcoes[i]==[1,0]):
-                postos[i]=0
-            elif(direcoes[i]==[0,1]):
+            if tipos[i]:
                 postos[i]=-1
-            elif(direcoes[i]==[-1,-1]):
-                postos[i]=-1
-            if ligacao==1:
-                if tipos[i]:
-                    postos[i]=-1
-            
-        lista=[]
-        for i in range(4):
-            for j in range(4):
-                t=j+i
-                if(t>3):
-                    t-=3
-                if postos[t]==1 and dirpeca[j]!=1:
-                    break
-                elif postos[t]==-1 and dirpeca[j]!=0:
-                    break
-                lista.append(i)
         
-        if (peca==1010 or peca==101)and len(lista)==2:
-            lista.pop()
+    lista=[]
+    for i in range(4):
+        for j in range(4):
+            t=j+i
+            if(t>3):
+                t-=3
+            if postos[t]==1 and dirpeca[j]!=1:
+                break
+            elif postos[t]==-1 and dirpeca[j]!=0:
+                break
+            lista.append(i)
+    
+    if (peca==1010 or peca==101)and len(lista)==2:
+        lista.pop()
+        
+
+
+    if (len(lista)==1):
+        roda(table,row,col,lista[0],1)
+        lista_proximo.append([row,col])
+    else:
+        list_actions.append([lista,[row,col]])
+
+            
             
 
-
-        if (len(lista)==1):
-            self.roda(self,row,col,lista[0],1)
-            self.lista_proximo.append([row,col])
-        else:
-            list_actions.append([lista,[row,col]])
-
-                
-
-    def get_lista_proximo(self):
-        return self.lista_proximo
-                
-
-
-
-    def ligacoes(self,row:int , col:int)->int :
-        peca=self.tablel[row][col]
-        direcoes=[self.quero_cima(self,row,col),self.quero_direita(self,row,col),self.quero_baixo(self,row,col),self.quero_esquerda(self,row,col)]
-        dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
-        lig=0
-        lig_total=0
-        for i in range(4):
-                if (direcoes[i]==1 & dirpeca[i]==1):
-                    lig+=1
-                if (dirpeca[i]==1):
-                    lig_total+=1
-        return lig/lig_total
+def ligacoes(table:list,row:int , col:int)->int :
+    peca=table[row][col]
+    direcoes=[quero_cima(table,row,col),quero_direita(table,row,col),quero_baixo(table,row,col),quero_esquerda(table,row,col)]
+    dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+    lig=0
+    lig_total=0
+    for i in range(4):
+            if (direcoes[i]==1 & dirpeca[i]==1):
+                lig+=1
+            if (dirpeca[i]==1):
+                lig_total+=1
+    return lig/lig_total
 
 
 
-    def place_piece(self, row: int, col: int, value: int) -> "Board":#temos que fazer o copy normal nao podemos usar o deep
-            """Devolve um novo tabuleiro com o valor colocado na posição indicada."""
-            new_table  = copy.deepcopy(self.tablel)
-            new_board = Board(new_table)
-            new_board.roda(new_board,row,col,value,1)
+def place_piece(action:list,board:list ) ->list:#temos que fazer o copy normal nao podemos usar o deep
+        """Devolve um novo tabuleiro com o valor colocado na posição indicada."""
+        new_table  = copy.deepcopy(self.tablel)
 
-            return new_board
+        roda(new_board,row,col,value,1)
+
+        return new_board
 
 
 
@@ -285,54 +243,53 @@ class Board:
 
 
 
-    @staticmethod
-    def parse_instance():
-        table_lig=[]
-        j=0
-        while 1:
-            line= sys.stdin.readline().split()
-            if line== "":
-                break
-            table_lig.append([])
-            for i in line:
-                if i== "FC":
-                    table_lig[j].append([1000,0])
-                elif i== "FB":
-                    table_lig[j].append([100,0])
-                elif i== "FE":
-                    table_lig[j].append([10,0])
-                elif i== "FD":
-                    table_lig[j].append([1,0])
-                elif i== "BC":
-                    table_lig[j].append([1101,0])
-                elif i== "BB":
-                    table_lig[j].append([1110,0])
-                elif i== "BE":
-                    table_lig[j].append([111,0])
-                elif i== "BD":
-                    table_lig[j].append([1011,0])
-                elif i== "VC":
-                    table_lig[j].append([1001,0])
-                elif i== "VB":
-                    table_lig[j].append([110,0])
-                elif i== "VE":
-                    table_lig[j].append([11,0])
-                elif i== "VD":
-                    table_lig[j].append([1100,0])
-                elif i== "LH":
-                    table_lig[j].append([101,0])
-                elif i== "LV":
-                    table_lig[j].append([1010,0])
-            j=j+1
+@staticmethod
+def parse_instance():
+    table_lig=[]
+    j=0
+    while 1:
+        line= sys.stdin.readline().split()
+        if line== "":
+            break
+        table_lig.append([])
+        for i in line:
+            if i== "FC":
+                table_lig[j].append([1000,0])
+            elif i== "FB":
+                table_lig[j].append([100,0])
+            elif i== "FE":
+                table_lig[j].append([10,0])
+            elif i== "FD":
+                table_lig[j].append([1,0])
+            elif i== "BC":
+                table_lig[j].append([1101,0])
+            elif i== "BB":
+                table_lig[j].append([1110,0])
+            elif i== "BE":
+                table_lig[j].append([111,0])
+            elif i== "BD":
+                table_lig[j].append([1011,0])
+            elif i== "VC":
+                table_lig[j].append([1001,0])
+            elif i== "VB":
+                table_lig[j].append([110,0])
+            elif i== "VE":
+                table_lig[j].append([11,0])
+            elif i== "VD":
+                table_lig[j].append([1100,0])
+            elif i== "LH":
+                table_lig[j].append([101,0])
+            elif i== "LV":
+                table_lig[j].append([1010,0])
+        j=j+1
 
-        return Board(Board,table_lig)
+    return table_lig
 
-    # TODO: outros metodos da classe
+# TODO: outros metodos da classe
 
 
 
-def criar_grafo(board:Board):
-    lista_de_listas=board.tablel
+def criar_grafo(lista_de_listas:list):
     grafo = {}
     
     # Iterar sobre a lista de listas e adicionar os nós ao grafo
@@ -341,8 +298,8 @@ def criar_grafo(board:Board):
             node = (i,j)  # Converter lista em tupla
             if node not in grafo:
                 grafo[node] = set()
-            peca=board.get_value(board,i,j)[0]
-            direcoes=[board.quero_cima(board,i,j),board.quero_direita(board,i,j),board.quero_baixo(board,i,j),board.quero_esquerda(board,i,j)]
+            peca=lista_de_listas[i][j][0]
+            direcoes=[quero_cima(lista_de_listas,i,j),quero_direita(lista_de_listas,i,j),quero_baixo(lista_de_listas,i,j),quero_esquerda(lista_de_listas,i,j)]
             # Adicionar conexões com os elementos adjacentes
             if (direcoes[0]==peca//1000):
                 grafo[node].add((i-1,j))
@@ -417,7 +374,10 @@ class PipeMania(Problem):
         partir do estado passado como argumento."""
         # TODO
         pass
-    def result(self, state: PipeManiaState, action):
+
+    def result(self, state: PipeManiaState, action:list):
+
+        new_board= Board.place_piece(state,action)
         """Retorna o estado resultante de executar a 'action' sobre
         'state' passado como argumento. A ação a executar deve ser uma
         das presentes na lista obtida pela execução de
