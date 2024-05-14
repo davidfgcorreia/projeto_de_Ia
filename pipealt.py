@@ -46,10 +46,12 @@ def get_value_num_l(self:list, row: int, col: int) -> tuple[int,int]:
 
 # TODO
 pass
+
+#posso fazer um try exept em vez dos ifs de borda
 def quero_cima(table:list, row: int, col: int) -> int:
-    tamanho=len(table)
+    tamanho=len(table)-1
     ligacao= [-1,-1]
-    if not (row > tamanho | row-1 < 0 | col > tamanho | col<0):
+    if not (row > tamanho or row-1 < 0 or col > tamanho or col<0):
         ligacao= table[row-1][col]
         return [ligacao[0]%100//10,ligacao[1]]
     return ligacao
@@ -57,27 +59,27 @@ def quero_cima(table:list, row: int, col: int) -> int:
     pass
 def quero_baixo(table:list ,row: int, col: int) -> int:
     ligacao= [-1,-1]
-    tamanho=len(table)
-    if not (row+1 > tamanho | row < 0 | col > tamanho | col<0):
+    tamanho=len(table)-1
+    if not (row+1 > tamanho or row < 0 or col > tamanho or col<0):
         ligacao= table[row+1][col]
         return [ligacao[0]//1000,ligacao[1]]
     return ligacao
     # TODO
     pass
-def quero_direita(table:list, row: int, col: int) -> int:
-    ligacao= [-1,-1]
-    tamanho=len(table)
-    if not (row > tamanho | row < 0 | col+1 > tamanho | col<0):
-        ligacao= table[row][col+1]
-        return [ligacao[0]%10,ligacao[1]]
-    return ligacao
-    pass
 def quero_esquerda(table:list, row: int, col: int) -> int:
     ligacao= [-1,-1]
-    tamanho=len(table)
-    if not (row > tamanho | row < 0 | col > tamanho | col-1<0):
+    tamanho=len(table)-1
+    if not (row > tamanho or row < 0 or col+1 > tamanho or col<0):
         ligacao= table[row][col-1]
         return [ligacao[0]%1000//100,ligacao[1]]
+    return ligacao
+    pass
+def quero_direita(table:list, row: int, col: int) -> int:
+    ligacao= [-1,-1]
+    tamanho=len(table)-1
+    if not (row > tamanho or row < 0 or col > tamanho or col-1<0):
+        ligacao= table[row][col+1]
+        return [ligacao[0]%10,ligacao[1]]
     return ligacao
     # TODO
     pass
@@ -91,7 +93,7 @@ def roda(table:list , row: int , col: int , rotacao: int,estado:int ):
         nova= peca//1000*10+ peca%1000//100+ peca%100//10*1000 +peca%10*100
     elif rotacao==3:
         nova=peca//1000+ peca%1000//100*1000+peca%100//10*100+peca%10*10
-    elif rotacao==4:
+    elif rotacao==0:
         nova=peca
 
     table[row][col]=[nova,estado]
@@ -178,21 +180,22 @@ def hipostese(table:list,row:int,col:int,lista_proximo:list,bons:list):
             lista_proximo.append([row-1,col])
             bons[0]+=1
     
-def busca_tipos(table:list,row:int,col:int):
-    tamanho=len(table)
-    ligacao=[[[-1,-1],-[-1,-1],[-1,-1],[-1,-1]],[False,False,False,False]]
-    if not(row > tamanho | row-1 < 0 | col > tamanho | col<0):
-        ligacao[0][0]= table[row-1][col]
-        ligacao[1][0]=(str(ligacao[0][0][0]).count('1')==True)
-    if not (row+1 > tamanho | row < 0 | col > tamanho | col<0):
-        ligacao[0][1]= table[row+1][col][0]
-        ligacao[1][1]=(str(ligacao[0][0][0]).count('1')==True)
-    if not (row > tamanho | row < 0 | col+1 > tamanho | col<0):
-        ligacao[0][2]= table[row][col+1]
-        ligacao[1][2]=(str(ligacao[0][0][0]).count('1')==True)
-    if not (row > tamanho | row < 0 | col > tamanho | col-1<0):
-        ligacao[0][3]= table[row][col-1]
-        ligacao[1][3]=(str(ligacao[0][0][0]).count('1')==True)
+def busca_tipos(table:list,row:int,col:int):#posso fazer um try exept em vez dos ifs
+    tamanho=len(table)-1
+    ligacao=[[[-1,-1],[-1,-1],[-1,-1],[-1,-1]],[0,0,0,0]]
+    if not(row > tamanho or row-1 < 0 or col > tamanho or col<0):
+        ligacao[0][0]= [table[row-1][col][0]%100//10,table[row-1][col][1]]
+        ligacao[1][0]=(str(table[row-1][col][0]).count('1'))
+    if not (row > tamanho or row < 0 or col+1 > tamanho or col<0):
+        ligacao[0][1]= [table[row][col+1][0]%10,table[row][col+1][1]]
+        ligacao[1][1]=(str(table[row][col+1][0]).count('1'))
+    if not (row+1 > tamanho or row < 0 or col > tamanho or col<0):
+        ligacao[0][2]= [table[row+1][col][0]//1000,table[row+1][col][1]]
+        ligacao[1][2]=(str(table[row+1][col][0]).count('1'))
+    if not (row > tamanho or row < 0 or col > tamanho or col-1<0):
+        ligacao[0][3]= [table[row][col-1][0]%1000//100,table[row][col-1][1]]
+        ligacao[1][3]=(str(table[row][col-1][0]).count('1'))
+
     return ligacao
 
 
@@ -202,13 +205,13 @@ def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:l
         pecat=table[row][col]
     except IndexError:
         return
-    if (pecat[1]==1):
+    if (pecat[1]==1 or row<0 or col<0):
         return
-    print(1)
     peca=pecat[0]
     dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
     ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
     postos=[0,0,0,0]
+
     if ligacao==1:
         direcoesl=busca_tipos(table,row,col)
         direcoes=direcoesl[0]
@@ -225,20 +228,23 @@ def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:l
         elif(direcoes[i]==[-1,-1]):
             postos[i]=-1
         if ligacao==1:
-            if tipos[i]:
+            if tipos[i]==1:
                 postos[i]=-1
+    
+
         
     lista=[]
     for i in range(4):
         for j in range(4):
             t=j+i
             if(t>3):
-                t-=3
+                t-=4
             if postos[t]==1 and dirpeca[j]!=1:
                 break
-            elif postos[t]==-1 and dirpeca[j]!=0:
+            if postos[t]==-1 and dirpeca[j]!=0:
                 break
-            lista.append(i)
+            if j==3:
+                lista.append(i)
     
     if (peca==1010 or peca==101)and len(lista)==2:
         lista.pop()
@@ -303,19 +309,19 @@ def parse_instance():
             if i== "FC":
                 table_lig[j].append([1000,0])
             elif i== "FB":
-                table_lig[j].append([100,0])
-            elif i== "FE":
                 table_lig[j].append([10,0])
-            elif i== "FD":
+            elif i== "FE":
                 table_lig[j].append([1,0])
+            elif i== "FD":
+                table_lig[j].append([100,0])
             elif i== "BC":
                 table_lig[j].append([1101,0])
             elif i== "BB":
-                table_lig[j].append([1110,0])
-            elif i== "BE":
                 table_lig[j].append([111,0])
-            elif i== "BD":
+            elif i== "BE":
                 table_lig[j].append([1011,0])
+            elif i== "BD":
+                table_lig[j].append([1110,0])
             elif i== "VC":
                 table_lig[j].append([1001,0])
             elif i== "VB":
@@ -494,8 +500,6 @@ if __name__ == "__main__":
     lista_proximos=inferencia1(tabel,bons)
     list_actions=[]
     inferencia2(tabel,lista_proximos,list_actions,bons)
-    print(tabel)
-
     # Ler o ficheiro do standard input,
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
