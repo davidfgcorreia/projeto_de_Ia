@@ -411,7 +411,7 @@ tree ={}
 lista_nos=[]
 contador_nos=0
 
-def expande(node:int,tree:dict,contador_nos:int):
+def expande(node:int,tree:dict,contador_nos:int,lista_nos:list):
     table=lista_nos[node][0]
     action=lista_nos[node][1][2] 
     new_table=result(table,action)
@@ -423,12 +423,12 @@ def expande(node:int,tree:dict,contador_nos:int):
     if actions!= []:
         for i in actions[0]:
             contador_nos+=1
-            add_children(node,new_table,[i,actions[1]],tree,contador_nos,bons)
+            add_children(node,new_table,[i,actions[1]],tree,contador_nos,bons,lista_nos)
 
 
 
 
-def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:list):
+def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:list,lista_nos:list):
     if node in tree:
         lista_nos.append([table,action,bons])
         tree[node].append(contador)
