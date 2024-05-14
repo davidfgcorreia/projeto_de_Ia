@@ -97,7 +97,7 @@ def roda(table:list , row: int , col: int , rotacao: int,estado:int ):
     table[row][col]=[nova,estado]
 
 
-def hipostese(table:list,row:int,col:int,lista_proximo:list):
+def hipostese(table:list,row:int,col:int,lista_proximo:list,bons:list):
     peca=table[row][col][0]
     dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
     ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
@@ -106,39 +106,50 @@ def hipostese(table:list,row:int,col:int,lista_proximo:list):
         if (dirpeca[0]==dirpeca[2]|dirpeca[1]==dirpeca[3]):
             ligacao=4
             lista_proximo.append([row,col])
+            bons[0]+=1
     if ligacao==3:
         if row==0:
             table[row][col]=[111,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
         elif row== len(table):
             table[row][col]=[1101,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
         elif col==0:
             table[row][col]=[1110,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
         elif col==len(table):
             table[row][col]=[1011,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
     elif ligacao==4:
         if row==0 or row == len(table):
             table[row][col]=[101,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
         elif col==0 or col == len(table):
             table[row][col]=[1010,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
     elif ligacao==2:
         if (row==0 and col==0):
             table[row][col]=[110,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
         if (row==0 and col==len(table)):
             table[row][col]=[11,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
         if (row==len(table) and col==0):
             table[row][col]=[1100,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
         if (row==len(table) and col==len(table)):
             table[row][col]=[1001,1]
             lista_proximo.append([row,col])
+            bons[0]+=1
     
 def busca_tipos(table:list,row:int,col:int):
     tamanho=len(table)
@@ -159,7 +170,7 @@ def busca_tipos(table:list,row:int,col:int):
 
 
 
-def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:list):
+def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:list,bons:list):
     pecat=table[row][col]
     if (peca[1]==1):
         return
@@ -206,6 +217,7 @@ def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:l
     if (len(lista)==1):
         roda(table,row,col,lista[0],1)
         lista_proximo.append([row,col])
+        bons[0]+=1
     else:
         list_actions.append([lista,[row,col]])
 
@@ -240,12 +252,6 @@ def place_piece(action:list,board:list ) ->list:#temos que fazer o copy normal n
         roda(new_table,action[1][0],action[1][1],action[0],1)
 
         return new_table
-
-
-
-
-
-
 
 
 
@@ -342,20 +348,20 @@ def verifica_conexao_total(grafo):
 
 
 
-def inferencia1(state:list):#isto em vez de board tem que se usar o pipestate
+def inferencia1(state:list,bons:list):#isto em vez de board tem que se usar o pipestate
     tamanho=len(state)
     lista_proximo=[]
     for i in range(tamanho):
-        hipostese(state,0,i,lista_proximo)
-        hipostese(state,tamanho,i,lista_proximo)
-        hipostese(state,i,0,lista_proximo)
-        hipostese(state,i,tamanho,lista_proximo)
+        hipostese(state,0,i,lista_proximo,bons)
+        hipostese(state,tamanho,i,lista_proximo,bons)
+        hipostese(state,i,0,lista_proximo,bons)
+        hipostese(state,i,tamanho,lista_proximo,bons)
     return lista_proximo
 
-def inferencia2(table:list ,lista_proximo:list):
+def inferencia2(table:list ,lista_proximo:list,list_actions:list,bons:list):
     while(len(lista_proximo)!=0):
         ponto=lista_proximo.pop(0)
-        hipostese_int(table, ponto[0],ponto[1],lista_proximo)
+        hipostese_int(table, ponto[0],ponto[1],list_actions,lista_proximo,bons)
 
     
 
@@ -377,7 +383,7 @@ def actions(state:list,list_actions:list):
     # TODO
     pass
 
-def result(self, state: PipeManiaState, action:list):
+def result(state: list, action:list):
 
     new_board= place_piece(state,action)
     """Retorna o estado resultante de executar a 'action' sobre
@@ -403,20 +409,40 @@ def h(self, node: Node):
 # TODO: outros metodos da classe
 tree ={}
 lista_nos=[]
-def add_children(node, children):
+contador_nos=0
+
+def expande(node:int,tree:dict,contador_nos:int):
+    table=lista_nos[node][0]
+    action=lista_nos[node][1][2] 
+    new_table=result(table,action)
+    lista_proximo=[lista_nos[node][1][0],lista_nos[1][1]]
+    list_actions=[]
+    bons=[lista_nos[node][2][0]+1]
+    inferencia2(new_table,lista_proximo,list_actions,bons)
+    actions=actions(new_table,list_actions)
+    if actions!= []:
+        for i in actions[0]:
+            contador_nos+=1
+            add_children(node,new_table,[i,actions[1]],tree,contador_nos,bons)
+
+
+
+
+def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:list):
     if node in tree:
-        tree[node].extend(children)
-    else:
-        tree[node] = children
+        lista_nos.append([table,action,bons])
+        tree[node].append(contador)
 
 
-def dfs_iterative(root):
+def dfs_iterative(root:int,tree:dict):
     stack = [root]
     visited = set()
+    contador_nos=0
 
     while stack:
         node = stack.pop()
         if node not in visited:
+            expande(node,tree,contador_nos)
             print(node)
             visited.add(node)
             # Adiciona os filhos do nó atual à pilha
