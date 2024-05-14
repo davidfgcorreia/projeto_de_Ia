@@ -259,9 +259,11 @@ def place_piece(action:list,board:list ) ->list:#temos que fazer o copy normal n
 def parse_instance():
     table_lig=[]
     j=0
-    while 1:
+    while True:
         line= sys.stdin.readline().split()
         if line== "":
+            break
+        if not line:  # Check if line is empty (end of file)
             break
         table_lig.append([])
         for i in line:
@@ -451,6 +453,7 @@ def dfs_iterative(root:int,tree:dict):
 
 if __name__ == "__main__":
     # TODO:
+    tabel1=parse_instance()
     # Ler o ficheiro do standard input,
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
