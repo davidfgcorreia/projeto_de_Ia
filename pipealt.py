@@ -107,45 +107,75 @@ def hipostese(table:list,row:int,col:int,lista_proximo:list,bons:list):
     if ligacao==3:
         if row==0:
             table[row][col]=[111,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
         elif row== len(table)-1:
             table[row][col]=[1101,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
         elif col==0:
             table[row][col]=[1110,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
         elif col==len(table)-1:
             table[row][col]=[1011,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
     elif ligacao==4:
         if row==0 or row == len(table)-1:
             table[row][col]=[101,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
         elif col==0 or col == len(table)-1:
             table[row][col]=[1010,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
     elif ligacao==2:
         if (row==0 and col==0):
             table[row][col]=[110,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
         if (row==0 and col==len(table)-1):
             table[row][col]=[11,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
         if (row==len(table) -1 and col==0):
             table[row][col]=[1100,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
         if (row==len(table) -1 and col==len(table)-1 ):
             table[row][col]=[1001,1]
-            lista_proximo.append([row,col])
+            lista_proximo.append([row+1,col])
+            lista_proximo.append([row,col+1])
+            lista_proximo.append([row,col-1])
+            lista_proximo.append([row-1,col])
             bons[0]+=1
     
 def busca_tipos(table:list,row:int,col:int):
@@ -168,9 +198,13 @@ def busca_tipos(table:list,row:int,col:int):
 
 
 def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:list,bons:list):
-    pecat=table[row][col]
-    if (peca[1]==1):
+    try:
+        pecat=table[row][col]
+    except IndexError:
         return
+    if (pecat[1]==1):
+        return
+    print(1)
     peca=pecat[0]
     dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
     ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
@@ -213,12 +247,14 @@ def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:l
 
     if (len(lista)==1):
         roda(table,row,col,lista[0],1)
-        lista_proximo.append([row,col])
+        lista_proximo.append([row+1,col])
+        lista_proximo.append([row,col+1])
+        lista_proximo.append([row,col-1])
+        lista_proximo.append([row-1,col])
         bons[0]+=1
     else:
         list_actions.append([lista,[row,col]])
 
-            
             
 
 def ligacoes(table:list,row:int , col:int)->int :
