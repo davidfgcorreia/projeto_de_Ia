@@ -401,8 +401,26 @@ def h(self, node: Node):
     pass
 
 # TODO: outros metodos da classe
+tree ={}
+lista_nos=[]
+def add_children(node, children):
+    if node in tree:
+        tree[node].extend(children)
+    else:
+        tree[node] = children
 
 
+def dfs_iterative(root):
+    stack = [root]
+    visited = set()
+
+    while stack:
+        node = stack.pop()
+        if node not in visited:
+            print(node)
+            visited.add(node)
+            # Adiciona os filhos do nó atual à pilha
+            stack.extend(child for child in tree[node] if child not in visited)
 
 
 if __name__ == "__main__":
