@@ -101,18 +101,15 @@ def hipostese(table:list,row:int,col:int,lista_proximo:list,bons:list):
     peca=table[row][col][0]
     dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
     ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
-
     if ligacao==2:
-        if (dirpeca[0]==dirpeca[2]|dirpeca[1]==dirpeca[3]):
+        if (dirpeca[0]==dirpeca[2] and dirpeca[1]==dirpeca[3]):
             ligacao=4
-            lista_proximo.append([row,col])
-            bons[0]+=1
     if ligacao==3:
         if row==0:
             table[row][col]=[111,1]
             lista_proximo.append([row,col])
             bons[0]+=1
-        elif row== len(table):
+        elif row== len(table)-1:
             table[row][col]=[1101,1]
             lista_proximo.append([row,col])
             bons[0]+=1
@@ -120,16 +117,16 @@ def hipostese(table:list,row:int,col:int,lista_proximo:list,bons:list):
             table[row][col]=[1110,1]
             lista_proximo.append([row,col])
             bons[0]+=1
-        elif col==len(table):
+        elif col==len(table)-1:
             table[row][col]=[1011,1]
             lista_proximo.append([row,col])
             bons[0]+=1
     elif ligacao==4:
-        if row==0 or row == len(table):
+        if row==0 or row == len(table)-1:
             table[row][col]=[101,1]
             lista_proximo.append([row,col])
             bons[0]+=1
-        elif col==0 or col == len(table):
+        elif col==0 or col == len(table)-1:
             table[row][col]=[1010,1]
             lista_proximo.append([row,col])
             bons[0]+=1
@@ -138,15 +135,15 @@ def hipostese(table:list,row:int,col:int,lista_proximo:list,bons:list):
             table[row][col]=[110,1]
             lista_proximo.append([row,col])
             bons[0]+=1
-        if (row==0 and col==len(table)):
+        if (row==0 and col==len(table)-1):
             table[row][col]=[11,1]
             lista_proximo.append([row,col])
             bons[0]+=1
-        if (row==len(table) and col==0):
+        if (row==len(table) -1 and col==0):
             table[row][col]=[1100,1]
             lista_proximo.append([row,col])
             bons[0]+=1
-        if (row==len(table) and col==len(table)):
+        if (row==len(table) -1 and col==len(table)-1 ):
             table[row][col]=[1001,1]
             lista_proximo.append([row,col])
             bons[0]+=1
@@ -355,9 +352,9 @@ def inferencia1(state:list,bons:list):#isto em vez de board tem que se usar o pi
     lista_proximo=[]
     for i in range(tamanho):
         hipostese(state,0,i,lista_proximo,bons)
-        hipostese(state,tamanho,i,lista_proximo,bons)
+        hipostese(state,tamanho-1,i,lista_proximo,bons)
         hipostese(state,i,0,lista_proximo,bons)
-        hipostese(state,i,tamanho,lista_proximo,bons)
+        hipostese(state,i,tamanho-1,lista_proximo,bons)
     return lista_proximo
 
 def inferencia2(table:list ,lista_proximo:list,list_actions:list,bons:list):
@@ -453,7 +450,16 @@ def dfs_iterative(root:int,tree:dict):
 
 if __name__ == "__main__":
     # TODO:
-    tabel1=parse_instance()
+    tabel=parse_instance()
+    tree ={}
+    lista_nos=[]
+    contador_nos=0
+    bons=[0]
+    lista_proximos=inferencia1(tabel,bons)
+    list_actions=[]
+    inferencia2(tabel,lista_proximos,list_actions,bons)
+    print(tabel)
+
     # Ler o ficheiro do standard input,
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
