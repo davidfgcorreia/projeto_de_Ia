@@ -340,7 +340,7 @@ def ligacoes(table:list,row:int , col:int)->int :
 
 
 
-def place_piece(action:list,board:list ) ->list:#temos que fazer o copy normal nao podemos usar o deep
+def place_piece(board:list,action:list ) ->list:#temos que fazer o copy normal nao podemos usar o deep
         """Devolve um novo tabuleiro com o valor colocado na posição indicada."""
         new_table  = []
         for i in board:
@@ -542,6 +542,7 @@ def actions(table:list,list_actions:list):
 def result(state: list, action:list):
 
     new_board= place_piece(state,action)
+    return new_board
     """Retorna o estado resultante de executar a 'action' sobre
     'state' passado como argumento. A ação a executar deve ser uma
     das presentes na lista obtida pela execução de
@@ -567,10 +568,12 @@ def h(self, node: Node):
 # TODO: outros metodos da classe
 
 def expande(node:int,tree:dict,contador_nos:int,lista_nos:list):
+    if(node==0):
+        return
     table=lista_nos[node][0]
     action=lista_nos[node][1]
     new_table=result(table,action)
-    lista_proximo=[action[0],action[1]]
+    lista_proximo=[action[1]]
     list_actions=[]
     bons=[lista_nos[node][2][0]+1]
     inferencia2(new_table,lista_proximo,list_actions,bons)
@@ -578,10 +581,10 @@ def expande(node:int,tree:dict,contador_nos:int,lista_nos:list):
     if (bons[0]==len(tabel)**2):
         if (goal_test(new_table)):
             return new_table
-    actions=actions(new_table,list_actions)
+    list_actions=actions(new_table,list_actions)
     
-    if actions!= []:
-        for i in actions[0]:
+    if list_actions!= []:
+        for i in list_actions[0]:
             contador_nos+=1
             add_children(node,new_table,[i,actions[1]],tree,contador_nos,bons,lista_nos)
 
@@ -601,8 +604,7 @@ def dfs_iterative(root:int,tree:dict,contador_nos:int,lista_nos:list):
     while stack:
         node = stack.pop()
         if node not in visited:
-            if(expande(node,tree,contador_nos,lista_nos)):
-                escreve_output()
+            expande(node,tree,contador_nos,lista_nos)
             print(node)
             visited.add(node)
             # Adiciona os filhos do nó atual à pilha
@@ -619,8 +621,6 @@ if __name__ == "__main__":
     lista_proximos=inferencia1(tabel,bons)
     list_actions=[]
     inferencia2(tabel,lista_proximos,list_actions,bons)
-    inferencia3(tabel,lista_proximos,list_actions,bons)
-    inferencia2(tabel,lista_proximos,list_actions,bons)
     #print(tabel)
     action=actions(tabel,list_actions)
     #fim=mostra(tabel)
@@ -631,10 +631,10 @@ if __name__ == "__main__":
     lista_nos.append([tabel,[],bons])
     tree[0]=[]
     if(len(action)>0):
-        for i in action[0][0]:
+        for i in action[0]:
             contador_nos+=1
             tree[0].append(contador_nos)
-            lista_nos.append([tabel,[i,action[0][1]],bons])
+            lista_nos.append([tabel,[i,action[1]],bons])
     final=dfs_iterative(0,tree,contador_nos,lista_nos)
 
     
