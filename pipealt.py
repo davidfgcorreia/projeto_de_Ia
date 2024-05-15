@@ -418,7 +418,10 @@ def actions(state:list,list_actions:list):
             list_actions.pop(i)
         elif(len(list_actions[i][0])==2):
             return list_actions[i]
-    return list_actions[0]   
+    if len(list_actions)>0:
+        return list_actions[0]  
+    else:
+        return [] 
     """Retorna uma lista de ações que podem ser executadas a
     partir do estado passado como argumento."""
     # TODO
@@ -496,10 +499,28 @@ if __name__ == "__main__":
     tree ={}
     lista_nos=[]
     contador_nos=0
-    bons=[0]
+    bons=[0]# os bons esta mal feito em hiposteses 1 repeticao de pontas 
     lista_proximos=inferencia1(tabel,bons)
     list_actions=[]
     inferencia2(tabel,lista_proximos,list_actions,bons)
+    action=actions(tabel,list_actions)
+
+    tree ={}
+    lista_nos=[]
+    contador_nos=0
+    lista_nos.append([tabel,[],bons])
+    tree[0]=[]
+    action.append([[2,4],[1,2]])
+    if(len(action)>0):
+        for i in action[0][0]:
+            contador_nos+=1
+            tree[0].append(contador_nos)
+            lista_nos.append([tabel,[i,action[0][1]],bons])
+
+    
+
+
+
     # Ler o ficheiro do standard input,
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
