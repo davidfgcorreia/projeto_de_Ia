@@ -455,11 +455,11 @@ def criar_grafo(lista_de_listas:list):
             # Adicionar conexões com os elementos adjacentes
             if (direcoes[0]==peca//1000):
                 grafo[node].add((i-1,j))
-            if (direcoes[0]==peca%1000//100):
+            if (direcoes[1]==peca%1000//100):
                 grafo[node].add((i+1,j))
-            if(direcoes[0]==peca%100//10):
+            if(direcoes[2]==peca%100//10):
                 grafo[node].add((i,j-1))
-            if (direcoes[0]==peca%10):
+            if (direcoes[3]==peca%10):
                 grafo[node].add((i,j+1))
                 
     return grafo
@@ -573,28 +573,35 @@ def expande(node:int,tree:dict,contador_nos:int,lista_nos:list):
     table=lista_nos[node][0]
     action=lista_nos[node][1]
     new_table=result(table,action)
-    lista_proximo=[action[1]]
+    lista_proximo=[]
+    row=action[1][0]
+    col=action[1][1]
+    lista_proximo.append([row+1,col])
+    lista_proximo.append([row,col+1])
+    lista_proximo.append([row,col-1])
+    lista_proximo.append([row-1,col])
     list_actions=[]
     bons=[lista_nos[node][2][0]+1]
     inferencia2(new_table,lista_proximo,list_actions,bons)
     lista_nos[node][0]=new_table
+    tree[node]=[]
     if (bons[0]==len(tabel)**2):
         if (goal_test(new_table)):
             return new_table
-    list_actions=actions(new_table,list_actions)
-    
-    if list_actions!= []:
-        for i in list_actions[0]:
-            contador_nos+=1
-            add_children(node,new_table,[i,actions[1]],tree,contador_nos,bons,lista_nos)
-
+        else:
+            return
+    else:
+        list_action=actions(new_table,list_actions)
+        if list_action!= []:
+            for i in list_action[0]:
+                contador_nos+=1
+                add_children(node,new_table,[i,action[1]],tree,contador_nos,bons,lista_nos)
 
 
 
 def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:list,lista_nos:list):
-    if node in tree:
-        lista_nos.append([table,action,bons])
-        tree[node].append(contador)
+    lista_nos.append([table,action,bons])
+    tree[node].append(contador)
 
 
 def dfs_iterative(root:int,tree:dict,contador_nos:int,lista_nos:list):
@@ -602,10 +609,10 @@ def dfs_iterative(root:int,tree:dict,contador_nos:int,lista_nos:list):
     visited = set()
 
     while stack:
-        node = stack.pop()
+        node = stack.pop(0)
         if node not in visited:
             expande(node,tree,contador_nos,lista_nos)
-            print(node)
+            #print(node)
             visited.add(node)
             # Adiciona os filhos do nó atual à pilha
             stack.extend(child for child in tree[node] if child not in visited)
@@ -623,8 +630,6 @@ if __name__ == "__main__":
     inferencia2(tabel,lista_proximos,list_actions,bons)
     #print(tabel)
     action=actions(tabel,list_actions)
-    #fim=mostra(tabel)
-    #print(fim)
     tree ={}
     lista_nos=[]
     contador_nos=0
@@ -636,6 +641,7 @@ if __name__ == "__main__":
             tree[0].append(contador_nos)
             lista_nos.append([tabel,[i,action[1]],bons])
     final=dfs_iterative(0,tree,contador_nos,lista_nos)
+
 
     
 
