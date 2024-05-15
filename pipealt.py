@@ -441,50 +441,40 @@ def mostra(table:list):
                 
 
 
-def criar_grafo(lista_de_listas:list):
-    grafo = {}
-    
+def procura(table:list,node,pilha:list):
     # Iterar sobre a lista de listas e adicionar os nós ao grafo
-    for i in range(len(lista_de_listas)):
-        for j in range(len(lista_de_listas[i])):
-            node = (i,j)  # Converter lista em tupla
-            if node not in grafo:
-                grafo[node] = set()
-            peca=lista_de_listas[i][j][0]
-            direcoes=[quero_cima(lista_de_listas,i,j),quero_direita(lista_de_listas,i,j),quero_baixo(lista_de_listas,i,j),quero_esquerda(lista_de_listas,i,j)]
-            # Adicionar conexões com os elementos adjacentes
-            if (direcoes[0]==peca//1000):
-                grafo[node].add((i-1,j))
-            if (direcoes[1]==peca%1000//100):
-                grafo[node].add((i+1,j))
-            if(direcoes[2]==peca%100//10):
-                grafo[node].add((i,j-1))
-            if (direcoes[3]==peca%10):
-                grafo[node].add((i,j+1))
-                
-    return grafo
+    row=node[0]
+    col=node[1]
+    
+    peca=table[row][col][0]
+    direcoes=[quero_cima(table,row,col),quero_direita(table,row,col),quero_baixo(table,row,col),quero_esquerda(table,row,col)]
+    # Adicionar conexões com os elementos adjacentes
+    if (direcoes[0][0]==peca//1000==1):
+        pilha.append((row-1,col))
+    if (direcoes[1][0]==peca%1000//100==1):
+        pilha.append((row,col+1))
+    if (direcoes[2][0]==peca%100//10==1):
+        pilha.append((row+1,col))
+    if(direcoes[3][0]==peca%10==1):
+        pilha.append((row,col-1))   
 
 
-def dfs_iterativa(grafo, inicio, visitados):
+def dfs_iterativa(table, inicio, visitados):
     pilha = [inicio]
     
     while pilha:
         vertice = pilha.pop()
         if vertice not in visitados:
             visitados.add(vertice)
-            pilha.extend(grafo[vertice] - visitados)
+            procura(table,vertice,pilha)
 
-def verifica_conexao_total(grafo):
-    todos_nos = set(grafo.keys())
+def verifica_conexao_total(table):
     visitados = set()
     
     # Realiza a busca em profundidade iterativa a partir de qualquer nó
-    for i in todos_nos:
-        if i not in visitados:
-            dfs_iterativa(grafo,i, visitados)
-            break
+    dfs_iterativa(table,(0,0), visitados)
     # Verifica se todos os nós foram visitados
-    return visitados == todos_nos
+    return len(visitados) == len(table)**2
 
 
 
@@ -552,8 +542,7 @@ def result(state: list, action:list):
 
 
 def goal_test(table:list):
-    grafo=criar_grafo(table)
-    return verifica_conexao_total(grafo)
+    return verifica_conexao_total(table)
     """Retorna True se e só se o estado passado como argumento é
     um estado objetivo. Deve verificar se todas as posições do tabuleiro
     estão preenchidas de acordo com as regras do problema."""
@@ -596,7 +585,6 @@ def expande(node:int,tree:dict,contador_nos:int,lista_nos:list):
             for i in list_action[0]:
                 contador_nos+=1
                 add_children(node,new_table,[i,action[1]],tree,contador_nos,bons,lista_nos)
-
 
 
 def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:list,lista_nos:list):
