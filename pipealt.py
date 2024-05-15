@@ -266,9 +266,9 @@ def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:l
     try:
         pecat=table[row][col]
     except IndexError:
-        return
+        return 1
     if (pecat[1]==1 or row<0 or col<0):
-        return
+        return 1
     peca=pecat[0]
     dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
     ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
@@ -320,9 +320,11 @@ def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:l
         lista_proximo.append([row,col-1])
         lista_proximo.append([row-1,col])
         bons[0]+=1
-    else:
+    elif(len(lista)>1):
         list_actions.append([lista,[row,col]])
-
+    elif(lista==[]):
+        return -1
+    return 1
 
 
 def ligacoes(table:list,row:int , col:int)->int :
@@ -436,6 +438,7 @@ def mostra(table:list):
                 texto+="LV\t"
         texto = texto[:-1]
         texto+="\n"
+    texto=texto[:-1]
     return texto
 
                 
@@ -491,9 +494,10 @@ def inferencia1(state:list,bons:list):#isto em vez de board tem que se usar o pi
 def inferencia2(table:list ,lista_proximo:list,list_actions:list,bons:list):
     while(len(lista_proximo)!=0):
         ponto=lista_proximo.pop(0)
-        hipostese_int(table, ponto[0],ponto[1],list_actions,lista_proximo,bons)
-
-    
+        o=hipostese_int(table, ponto[0],ponto[1],list_actions,lista_proximo,bons)
+        if(o==-1):
+            return-1
+    return 0
 
     """Retorna uma lista de ações que podem ser executadas a
     partir do estado passado como argumento."""
@@ -556,9 +560,9 @@ def h(self, node: Node):
 
 # TODO: outros metodos da classe
 
-def expande(node:int,tree:dict,contador_nos:int,lista_nos:list):
+def expande(node:int,tree:dict,contador_nos:list,lista_nos:list):
     if(node==0):
-        return
+        return []
     table=lista_nos[node][0]
     action=lista_nos[node][1]
     new_table=result(table,action)
@@ -571,36 +575,39 @@ def expande(node:int,tree:dict,contador_nos:int,lista_nos:list):
     lista_proximo.append([row-1,col])
     list_actions=[]
     bons=[lista_nos[node][2][0]+1]
-    inferencia2(new_table,lista_proximo,list_actions,bons)
+    o=inferencia2(new_table,lista_proximo,list_actions,bons)
     lista_nos[node][0]=new_table
     tree[node]=[]
-    if (bons[0]==len(tabel)**2):
+    if o==-1:
+        return []
+    if (bons[0]==len(table)**2):
         if (goal_test(new_table)):
             return new_table
         else:
-            return
+            return []
     else:
         list_action=actions(new_table,list_actions)
         if list_action!= []:
             for i in list_action[0]:
-                contador_nos+=1
-                add_children(node,new_table,[i,action[1]],tree,contador_nos,bons,lista_nos)
-
+                contador_nos[0]+=1
+                add_children(node,new_table,[i,list_action[1]],tree,contador_nos[0],bons,lista_nos)
+    return []
 
 def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:list,lista_nos:list):
     lista_nos.append([table,action,bons])
     tree[node].append(contador)
 
 
-def dfs_iterative(root:int,tree:dict,contador_nos:int,lista_nos:list):
+def dfs_iterative(root:int,tree:dict,contador_nos:list,lista_nos:list):
     stack = [root]
     visited = set()
 
     while stack:
-        node = stack.pop(0)
+        node = stack.pop()
         if node not in visited:
-            expande(node,tree,contador_nos,lista_nos)
-            #print(node)
+            lista_final=expande(node,tree,contador_nos,lista_nos)
+            if lista_final!=[]:
+                return lista_final
             visited.add(node)
             # Adiciona os filhos do nó atual à pilha
             stack.extend(child for child in tree[node] if child not in visited)
@@ -616,19 +623,19 @@ if __name__ == "__main__":
     lista_proximos=inferencia1(tabel,bons)
     list_actions=[]
     inferencia2(tabel,lista_proximos,list_actions,bons)
-    #print(tabel)
     action=actions(tabel,list_actions)
     tree ={}
     lista_nos=[]
-    contador_nos=0
+    contador_nos=[0]
     lista_nos.append([tabel,[],bons])
     tree[0]=[]
     if(len(action)>0):
         for i in action[0]:
-            contador_nos+=1
-            tree[0].append(contador_nos)
+            contador_nos[0]+=1
+            tree[0].append(contador_nos[0])
             lista_nos.append([tabel,[i,action[1]],bons])
     final=dfs_iterative(0,tree,contador_nos,lista_nos)
+    print(mostra(final))
 
 
     
