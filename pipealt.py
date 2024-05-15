@@ -69,7 +69,7 @@ def quero_baixo(table:list ,row: int, col: int) -> int:
 def quero_esquerda(table:list, row: int, col: int) -> int:
     ligacao= [-1,-1]
     tamanho=len(table)-1
-    if not (row > tamanho or row < 0 or col+1 > tamanho or col<0):
+    if not (row > tamanho or row < 0 or col > tamanho or col-1<0):
         ligacao= table[row][col-1]
         return [ligacao[0]%1000//100,ligacao[1]]
     return ligacao
@@ -77,7 +77,7 @@ def quero_esquerda(table:list, row: int, col: int) -> int:
 def quero_direita(table:list, row: int, col: int) -> int:
     ligacao= [-1,-1]
     tamanho=len(table)-1
-    if not (row > tamanho or row < 0 or col > tamanho or col-1<0):
+    if not (row > tamanho or row < 0 or col+1 > tamanho or col<0):
         ligacao= table[row][col+1]
         return [ligacao[0]%10,ligacao[1]]
     return ligacao
@@ -152,33 +152,37 @@ def hipostese(table:list,row:int,col:int,lista_proximo:list,bons:list):
             bons[0]+=1
     elif ligacao==2:
         if (row==0 and col==0):
-            table[row][col]=[110,1]
-            lista_proximo.append([row+1,col])
-            lista_proximo.append([row,col+1])
-            lista_proximo.append([row,col-1])
-            lista_proximo.append([row-1,col])
-            bons[0]+=1
+            if(table[row][col][1]==0):
+                table[row][col]=[110,1]
+                lista_proximo.append([row+1,col])
+                lista_proximo.append([row,col+1])
+                lista_proximo.append([row,col-1])
+                lista_proximo.append([row-1,col])
+                bons[0]+=1
         if (row==0 and col==len(table)-1):
-            table[row][col]=[11,1]
-            lista_proximo.append([row+1,col])
-            lista_proximo.append([row,col+1])
-            lista_proximo.append([row,col-1])
-            lista_proximo.append([row-1,col])
-            bons[0]+=1
+            if(table[row][col][1]==0):
+                table[row][col]=[11,1]
+                lista_proximo.append([row+1,col])
+                lista_proximo.append([row,col+1])
+                lista_proximo.append([row,col-1])
+                lista_proximo.append([row-1,col])
+                bons[0]+=1
         if (row==len(table) -1 and col==0):
-            table[row][col]=[1100,1]
-            lista_proximo.append([row+1,col])
-            lista_proximo.append([row,col+1])
-            lista_proximo.append([row,col-1])
-            lista_proximo.append([row-1,col])
-            bons[0]+=1
+            if(table[row][col][1]==0):
+                table[row][col]=[1100,1]
+                lista_proximo.append([row+1,col])
+                lista_proximo.append([row,col+1])
+                lista_proximo.append([row,col-1])
+                lista_proximo.append([row-1,col])
+                bons[0]+=1
         if (row==len(table) -1 and col==len(table)-1 ):
-            table[row][col]=[1001,1]
-            lista_proximo.append([row+1,col])
-            lista_proximo.append([row,col+1])
-            lista_proximo.append([row,col-1])
-            lista_proximo.append([row-1,col])
-            bons[0]+=1
+            if(table[row][col][1]==0):
+                table[row][col]=[1001,1]
+                lista_proximo.append([row+1,col])
+                lista_proximo.append([row,col+1])
+                lista_proximo.append([row,col-1])
+                lista_proximo.append([row-1,col])
+                bons[0]+=1
     
 def busca_tipos(table:list,row:int,col:int):#posso fazer um try exept em vez dos ifs
     tamanho=len(table)-1
@@ -199,6 +203,64 @@ def busca_tipos(table:list,row:int,col:int):#posso fazer um try exept em vez dos
     return ligacao
 
 
+
+def hipostese_2(table:list,row:int,col:int, list_actions: list,lista_proximo:list,bons:list):
+    pecat=table[row][col]
+    if (pecat[1]==1 or row<0 or col<0):
+        return
+    peca=pecat[0]
+    dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+    ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
+    postos=[0,0,0,0]
+
+    if ligacao==1:
+        direcoesl=busca_tipos(table,row,col)
+        direcoes=direcoesl[0]
+        tipos=direcoesl[1]
+    else:
+        return
+    for i in range(4):
+        if(direcoes[i]==[1,1]):
+            postos[i]=1
+        elif(direcoes[i]==[1,0]):
+            postos[i]=0
+        elif(direcoes[i]==[0,1]):
+            postos[i]=-1
+        elif(direcoes[i]==[-1,-1]):
+            postos[i]=-1
+        if ligacao==1:
+            if tipos[i]==1:
+                postos[i]=-1
+    
+
+        
+    lista=[]
+    for i in range(4):
+        for j in range(4):
+            t=j+i
+            if(t>3):
+                t-=4
+            if postos[t]==1 and dirpeca[j]!=1:
+                break
+            if postos[t]==-1 and dirpeca[j]!=0:
+                break
+            if j==3:
+                lista.append(i)
+    
+    if (peca==1010 or peca==101)and len(lista)==2:
+        lista.pop()
+        
+
+
+    if (len(lista)==1):
+        roda(table,row,col,lista[0],1)
+        lista_proximo.append([row+1,col])
+        lista_proximo.append([row,col+1])
+        lista_proximo.append([row,col-1])
+        lista_proximo.append([row-1,col])
+        bons[0]+=1
+    else:
+        list_actions.append([lista,[row,col]])
 
 def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:list,bons:list):
     try:
@@ -261,7 +323,7 @@ def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:l
     else:
         list_actions.append([lista,[row,col]])
 
-            
+
 
 def ligacoes(table:list,row:int , col:int)->int :
     peca=table[row][col]
@@ -340,6 +402,43 @@ def parse_instance():
 
 # TODO: outros metodos da classe
 
+def mostra(table:list):
+    texto=""
+    for i in table:
+        for j in i:
+            if j[0]== 1000:
+                texto+="FC\t"
+            elif j[0]==10:
+                texto+="FB\t"
+            elif j[0]==1:
+                texto+="FE\t"
+            elif j[0]==100:
+                texto+="FD\t"
+            elif j[0]==1101:
+                texto+="BC\t"
+            elif j[0]==111:
+                texto+="BB\t"
+            elif j[0]==1011:
+                texto+="BE\t"
+            elif j[0]==1110:
+                texto+="BD\t"
+            elif j[0]==1001:
+                texto+="VC\t"
+            elif j[0]==110:
+                texto+="VB\t"
+            elif j[0]==11:
+                texto+="VE\t"
+            elif j[0]==1100:
+                texto+="VD\t"
+            elif j[0]==101:
+                texto+="LH\t"
+            elif j[0]==1010:
+                texto+="LV\t"
+        texto = texto[:-1]
+        texto+="\n"
+    return texto
+
+                
 
 
 def criar_grafo(lista_de_listas:list):
@@ -411,11 +510,24 @@ def inferencia2(table:list ,lista_proximo:list,list_actions:list,bons:list):
     # TODO
     pass
 
+def inferencia3(table:list ,lista_proximo:list,list_actions:list,bons:list):
+    for i in range(len(table)-1):
+        for j in range(len(table)-1):
+            hipostese_2(table,i,j,list_actions,lista_proximo,bons)
 
-def actions(state:list,list_actions:list):
-    for i in range(len(list_actions)):
-        if (state.get_value(list_actions[i][1][0],list_actions[i][1][1])[1]==1):
+    
+
+    """Retorna uma lista de ações que podem ser executadas a
+    partir do estado passado como argumento."""
+    # TODO
+    pass
+
+
+def actions(table:list,list_actions:list):
+    for i in range(len(list_actions)-2):
+        if (table[list_actions[i][1][0]][list_actions[i][1][1]][1]==1):
             list_actions.pop(i)
+            pass
         elif(len(list_actions[i][0])==2):
             return list_actions[i]
     if len(list_actions)>0:
@@ -438,7 +550,9 @@ def result(state: list, action:list):
     pass
 
 
-def goal_test(self, state: PipeManiaState):
+def goal_test(table:list):
+    grafo=criar_grafo(table)
+    return verifica_conexao_total(grafo)
     """Retorna True se e só se o estado passado como argumento é
     um estado objetivo. Deve verificar se todas as posições do tabuleiro
     estão preenchidas de acordo com as regras do problema."""
@@ -451,19 +565,21 @@ def h(self, node: Node):
     pass
 
 # TODO: outros metodos da classe
-tree ={}
-lista_nos=[]
-contador_nos=0
 
 def expande(node:int,tree:dict,contador_nos:int,lista_nos:list):
     table=lista_nos[node][0]
-    action=lista_nos[node][1][2] 
+    action=lista_nos[node][1]
     new_table=result(table,action)
-    lista_proximo=[lista_nos[node][1][0],lista_nos[1][1]]
+    lista_proximo=[action[0],action[1]]
     list_actions=[]
     bons=[lista_nos[node][2][0]+1]
     inferencia2(new_table,lista_proximo,list_actions,bons)
+    lista_nos[node][0]=new_table
+    if (bons[0]==len(tabel)**2):
+        if (goal_test(new_table)):
+            return new_table
     actions=actions(new_table,list_actions)
+    
     if actions!= []:
         for i in actions[0]:
             contador_nos+=1
@@ -478,15 +594,15 @@ def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:
         tree[node].append(contador)
 
 
-def dfs_iterative(root:int,tree:dict):
+def dfs_iterative(root:int,tree:dict,contador_nos:int,lista_nos:list):
     stack = [root]
     visited = set()
-    contador_nos=0
 
     while stack:
         node = stack.pop()
         if node not in visited:
-            expande(node,tree,contador_nos)
+            if(expande(node,tree,contador_nos,lista_nos)):
+                escreve_output()
             print(node)
             visited.add(node)
             # Adiciona os filhos do nó atual à pilha
@@ -503,19 +619,23 @@ if __name__ == "__main__":
     lista_proximos=inferencia1(tabel,bons)
     list_actions=[]
     inferencia2(tabel,lista_proximos,list_actions,bons)
+    inferencia3(tabel,lista_proximos,list_actions,bons)
+    inferencia2(tabel,lista_proximos,list_actions,bons)
+    #print(tabel)
     action=actions(tabel,list_actions)
-
+    #fim=mostra(tabel)
+    #print(fim)
     tree ={}
     lista_nos=[]
     contador_nos=0
     lista_nos.append([tabel,[],bons])
     tree[0]=[]
-    action.append([[2,4],[1,2]])
     if(len(action)>0):
         for i in action[0][0]:
             contador_nos+=1
             tree[0].append(contador_nos)
             lista_nos.append([tabel,[i,action[0][1]],bons])
+    final=dfs_iterative(0,tree,contador_nos,lista_nos)
 
     
 
