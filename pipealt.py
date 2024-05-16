@@ -6,6 +6,7 @@
 # 00000 Nome1
 # 00000 Nome2
 import sys
+import time
 from search import (
     Problem,
     Node,
@@ -452,6 +453,7 @@ def procura(table:list,node,pilha:list):
     peca=table[row][col][0]
     direcoes=[quero_cima(table,row,col),quero_direita(table,row,col),quero_baixo(table,row,col),quero_esquerda(table,row,col)]
     # Adicionar conexões com os elementos adjacentes
+    
     if (direcoes[0][0]==peca//1000==1):
         pilha.append((row-1,col))
     if (direcoes[1][0]==peca%1000//100==1):
@@ -518,16 +520,21 @@ def inferencia3(table:list ,lista_proximo:list,list_actions:list,bons:list):
 
 
 def actions(table:list,list_actions:list):
-    for i in range(len(list_actions)-2):
-        if (table[list_actions[i][1][0]][list_actions[i][1][1]][1]==1):
-            list_actions.pop(i)
-            pass
-        elif(len(list_actions[i][0])==2):
-            return list_actions[i]
-    if len(list_actions)>0:
-        return list_actions[0]  
-    else:
-        return [] 
+    contador=len(list_actions)-1
+    while(contador>=0):
+        if (table[list_actions[contador][1][0]][list_actions[contador][1][1]][1]==1):
+            list_actions.pop(contador)
+        elif(len(list_actions[contador][0])==2):
+            return list_actions[contador]
+        contador-=1
+    contador=len(list_actions)-1
+    while(contador>=0):
+        if (table[list_actions[contador][1][0]][list_actions[contador][1][1]][1]==1):
+            list_actions.pop(contador)
+        else:
+            return list_actions[contador]
+        contador-=1
+    return [] 
     """Retorna uma lista de ações que podem ser executadas a
     partir do estado passado como argumento."""
     # TODO
@@ -616,6 +623,7 @@ def dfs_iterative(root:int,tree:dict,contador_nos:list,lista_nos:list):
 if __name__ == "__main__":
     # TODO:
     tabel=parse_instance()
+    start_time = time.time()
     tree ={}
     lista_nos=[]
     contador_nos=0
@@ -624,19 +632,27 @@ if __name__ == "__main__":
     list_actions=[]
     inferencia2(tabel,lista_proximos,list_actions,bons)
     action=actions(tabel,list_actions)
-    tree ={}
-    lista_nos=[]
-    contador_nos=[0]
-    lista_nos.append([tabel,[],bons])
-    tree[0]=[]
-    if(len(action)>0):
-        for i in action[0]:
-            contador_nos[0]+=1
-            tree[0].append(contador_nos[0])
-            lista_nos.append([tabel,[i,action[1]],bons])
-    final=dfs_iterative(0,tree,contador_nos,lista_nos)
-    print(mostra(final))
-
+    if(bons[0]==len(tabel)**2):
+        print(mostra(tabel))
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(elapsed_time)
+    else:    
+        tree ={}
+        lista_nos=[]
+        contador_nos=[0]
+        lista_nos.append([tabel,[],bons])
+        tree[0]=[]
+        if(len(action)>0):
+            for i in action[0]:
+                contador_nos[0]+=1
+                tree[0].append(contador_nos[0])
+                lista_nos.append([tabel,[i,action[1]],bons])
+        final=dfs_iterative(0,tree,contador_nos,lista_nos)
+        print(mostra(final))
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(elapsed_time)
 
     
 
