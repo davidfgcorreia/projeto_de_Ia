@@ -580,6 +580,7 @@ def expande(node:int,tree:dict,contador_nos:list,lista_nos:list):
                 contador_nos[0]+=1
                 add_children(node,new_table,[i,action[1]],tree,contador_nos[0],bons,lista_nos)
 
+    lista_nos[node].clear()
     return []
 
 def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:list,lista_nos:list):
