@@ -516,6 +516,56 @@ def enconta_cluster(table:list):
 
     pass
 
+def encontra_cluster_deslocado(table:list):
+     for i in range(len(table)):
+        for j in range(len(table)):
+            if table[i][j][1]==0:
+                peca=tabel[i][j][0]
+                dirpeca=[peca//1000,peca%1000//100,peca%100//10,peca%10]
+                ligacao=dirpeca[0]+dirpeca[1]+dirpeca[2]+dirpeca[3]
+                postos=[0,0,0,0]
+                direcoes=[quero_cima(table,i,j),quero_direita(table,i,j),quero_baixo(table,i,j),quero_esquerda(table,i,j)]
+                if ligacao==1:
+                    direcoesl=busca_tipos(table,i,j)
+                    direcoes=direcoesl[0]
+                    tipos=direcoesl[1]
+                else:
+                    direcoes=[quero_cima(table,i,j),quero_direita(table,i,j),quero_baixo(table,i,j),quero_esquerda(table,i,j)]
+                for i in range(4):
+                    if(direcoes[i]==[1,1]):
+                        postos[i]=1
+                    elif(direcoes[i]==[1,0]):
+                        postos[i]=0
+                    elif(direcoes[i]==[0,1]):
+                        postos[i]=-1
+                    elif(direcoes[i]==[-1,-1]):
+                        postos[i]=-1
+                    if ligacao==1:
+                        if tipos[i]==1:
+                            postos[i]=-1
+                
+
+                    
+                lista=[]
+                for i in range(4):
+                    for j in range(4):
+                        t=j+i
+                        if(t>3):
+                            t-=4
+                        if postos[t]==1 and dirpeca[j]!=1:
+                            break
+                        if postos[t]==-1 and dirpeca[j]!=0:
+                            break
+                        if j==3:
+                            lista.append(i)
+                
+                if (peca==1010 or peca==101)and len(lista)==2:
+                    lista.pop()
+                    
+                return [lista,[i,j]]
+
+
+
 def result(state: list, action:list):
 
     new_board= place_piece(state,action)
@@ -560,13 +610,11 @@ def expande(node:int,tree:dict,contador_nos:list,lista_nos:list):
     lista_nos[node][2]=[bons[0]]
     tree[node]=[]
     if o==-1:
-        lista_nos[node].clear()
         return []
     if (bons[0]==len(table)**2):
         if (goal_test(new_table)):
             return new_table
         else:
-            lista_nos[node].clear()
             return []
     else:
         list_action=actions(new_table,list_actions)
@@ -576,11 +624,17 @@ def expande(node:int,tree:dict,contador_nos:list,lista_nos:list):
                 add_children(node,new_table,[i,list_action[1]],tree,contador_nos[0],bons,lista_nos)
         else:
             action=enconta_cluster(new_table)
-            for i in action[0]:
-                contador_nos[0]+=1
-                add_children(node,new_table,[i,action[1]],tree,contador_nos[0],bons,lista_nos)
+            if action!=[]:
+                for i in action[0]:
+                    contador_nos[0]+=1
+                    add_children(node,new_table,[i,action[1]],tree,contador_nos[0],bons,lista_nos)
+            else:
+                action=encontra_cluster_deslocado(new_table)
+                if action!=[]:
+                    for i in action[0]:
+                        contador_nos[0]+=1
+                        add_children(node,new_table,[i,action[1]],tree,contador_nos[0],bons,lista_nos)
 
-    lista_nos[node].clear()
     return []
 
 def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:list,lista_nos:list):
@@ -598,6 +652,7 @@ def dfs_iterative(root:int,tree:dict,contador_nos:list,lista_nos:list):
             if lista_final!=[]:
                 return lista_final
             visited.add(node)
+            lista_nos[node].clear()
             # Adiciona os filhos do nó atual à pilha
             stack.extend(child for child in tree[node] if child not in visited)
 
