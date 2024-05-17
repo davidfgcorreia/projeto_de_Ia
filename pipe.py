@@ -6,49 +6,21 @@
 # 00000 Nome1
 # 00000 Nome2
 import sys
-from search import (
-    Problem,
-    Node,
-    astar_search,
-    breadth_first_tree_search,
-    depth_first_tree_search,
-    greedy_search,
-    recursive_best_first_search,
-)
-import time
+#from search import (
+#    Problem,
+#    Node,
+#    astar_search,
+#    breadth_first_tree_search,
+#    depth_first_tree_search,
+#    greedy_search,
+#    recursive_best_first_search,
+#)
 #from numpy import(
 #    ndarray,array,
 #)
 
-class PipeManiaState:
-    state_id = 0
-
-    def __init__(self, board):
-        self.board = board
-        self.id = PipeManiaState.state_id
-        PipeManiaState.state_id += 1
-
-    def __lt__(self, other):
-        return self.id < other.id
-
-    # TODO: outros metodos da classe
 
 
-
-
-
-def get_value_num_l(self:list, row: int, col: int) -> tuple[int,int]:
-    tamanho=len(self)
-    if (row<0 or row>tamanho-1 or col<0 or col>tamanho-1):
-        return 0
-    return self[row][col]
-"""Devolve o valor na respetiva posição do tabuleiro."""
-
-
-# TODO
-pass
-
-#posso fazer um try exept em vez dos ifs de borda
 def quero_cima(table:list, row: int, col: int) -> int:
     tamanho=len(table)-1
     ligacao= [-1,-1]
@@ -85,7 +57,6 @@ def quero_direita(table:list, row: int, col: int) -> int:
     # TODO
     pass
 
-
 def roda(table:list , row: int , col: int , rotacao: int,estado:int ):
     peca=table[row][col][0]
     if rotacao==1:
@@ -98,7 +69,6 @@ def roda(table:list , row: int , col: int , rotacao: int,estado:int ):
         nova=peca
 
     table[row][col]=[nova,estado]
-
 
 def hipostese(table:list,row:int,col:int,lista_proximo:list,bons:list):
     peca=table[row][col][0]
@@ -202,8 +172,6 @@ def busca_tipos(table:list,row:int,col:int):#posso fazer um try exept em vez dos
         ligacao[1][3]=(str(table[row][col-1][0]).count('1'))
 
     return ligacao
-
-
 
 def hipostese_2(table:list,row:int,col:int, list_actions: list,lista_proximo:list,bons:list):
     pecat=table[row][col]
@@ -323,10 +291,9 @@ def hipostese_int(table:list,row:int,col:int, list_actions: list,lista_proximo:l
         bons[0]+=1
     elif(len(lista)>1):
         list_actions.append([lista,[row,col]])
-    elif(lista==[]):
+    elif(len(lista)==0):
         return -1
     return 1
-
 
 def ligacoes(table:list,row:int , col:int)->int :
     peca=table[row][col]
@@ -340,8 +307,6 @@ def ligacoes(table:list,row:int , col:int)->int :
             if (dirpeca[i]==1):
                 lig_total+=1
     return lig/lig_total
-
-
 
 def place_piece(board:list,action:list ) ->list:#temos que fazer o copy normal nao podemos usar o deep
         """Devolve um novo tabuleiro com o valor colocado na posição indicada."""
@@ -357,9 +322,6 @@ def place_piece(board:list,action:list ) ->list:#temos que fazer o copy normal n
 
         return new_table
 
-
-
-@staticmethod
 def parse_instance():
     table_lig=[]
     j=0
@@ -403,10 +365,9 @@ def parse_instance():
 
     return table_lig
 
-# TODO: outros metodos da classe
-
 def mostra(table:list):
     texto=""
+
     for i in table:
         for j in i:
             if j[0]== 1000:
@@ -442,9 +403,6 @@ def mostra(table:list):
     texto = texto[:-1]
     return texto
 
-                
-
-
 def procura(table:list,node,pilha:list):
     # Iterar sobre a lista de listas e adicionar os nós ao grafo
     row=node[0]
@@ -463,7 +421,6 @@ def procura(table:list,node,pilha:list):
     if(direcoes[3][0]==peca%10==1):
         pilha.append((row,col-1))   
 
-
 def dfs_iterativa(table, inicio, visitados):
     pilha = [inicio]
     
@@ -481,8 +438,6 @@ def verifica_conexao_total(table):
     # Verifica se todos os nós foram visitados
     return len(visitados) == len(table)**2
 
-
-
 def inferencia1(state:list,bons:list):#isto em vez de board tem que se usar o pipestate
     tamanho=len(state)
     lista_proximo=[]
@@ -494,6 +449,7 @@ def inferencia1(state:list,bons:list):#isto em vez de board tem que se usar o pi
     return lista_proximo
 
 def inferencia2(table:list ,lista_proximo:list,list_actions:list,bons:list):
+    ponto=[]
     while(len(lista_proximo)!=0):
         ponto=lista_proximo.pop(0)
         o=hipostese_int(table, ponto[0],ponto[1],list_actions,lista_proximo,bons)
@@ -518,7 +474,6 @@ def inferencia3(table:list ,lista_proximo:list,list_actions:list,bons:list):
     # TODO
     pass
 
-
 def actions(table:list,list_actions:list):
     contador=len(list_actions)-1
     while(contador>=0):
@@ -540,6 +495,27 @@ def actions(table:list,list_actions:list):
     # TODO
     pass
 
+def enconta_cluster(table:list):
+    contador=len(list_actions1)-1
+    while(contador>=0):
+        if (table[list_actions1[contador][1][0]][list_actions1[contador][1][1]][1]==1):
+            pass
+        elif(len(list_actions1[contador][0])==2):
+            return list_actions1[contador]
+        contador-=1
+    contador=len(list_actions1)-1
+    while(contador>=0):
+        if (table[list_actions1[contador][1][0]][list_actions1[contador][1][1]][1]==1):
+            pass
+        else:
+            return list_actions1[contador]
+        contador-=1
+    return [] 
+
+
+
+    pass
+
 def result(state: list, action:list):
 
     new_board= place_piece(state,action)
@@ -551,7 +527,6 @@ def result(state: list, action:list):
     # TODO
     pass
 
-
 def goal_test(table:list):
     return verifica_conexao_total(table)
     """Retorna True se e só se o estado passado como argumento é
@@ -560,12 +535,10 @@ def goal_test(table:list):
     # TODO
     pass
 
-def h(self, node: Node):
+#def h(self, node: Node):
     """Função heuristica utilizada para a procura A*."""
     # TODO
     pass
-
-# TODO: outros metodos da classe
 
 def expande(node:int,tree:dict,contador_nos:list,lista_nos:list):
     if(node==0):
@@ -584,13 +557,16 @@ def expande(node:int,tree:dict,contador_nos:list,lista_nos:list):
     bons=[lista_nos[node][2][0]+1]
     o=inferencia2(new_table,lista_proximo,list_actions,bons)
     lista_nos[node][0]=new_table
+    lista_nos[node][2]=[bons[0]]
     tree[node]=[]
     if o==-1:
+        lista_nos[node].clear()
         return []
     if (bons[0]==len(table)**2):
         if (goal_test(new_table)):
             return new_table
         else:
+            lista_nos[node].clear()
             return []
     else:
         list_action=actions(new_table,list_actions)
@@ -598,12 +574,17 @@ def expande(node:int,tree:dict,contador_nos:list,lista_nos:list):
             for i in list_action[0]:
                 contador_nos[0]+=1
                 add_children(node,new_table,[i,list_action[1]],tree,contador_nos[0],bons,lista_nos)
+        else:
+            action=enconta_cluster(new_table)
+            for i in action[0]:
+                contador_nos[0]+=1
+                add_children(node,new_table,[i,action[1]],tree,contador_nos[0],bons,lista_nos)
+
     return []
 
 def add_children(node:int , table:list,action:list ,tree:dict,contador:int,bons:list,lista_nos:list):
     lista_nos.append([table,action,bons])
     tree[node].append(contador)
-
 
 def dfs_iterative(root:int,tree:dict,contador_nos:list,lista_nos:list):
     stack = [root]
@@ -620,18 +601,17 @@ def dfs_iterative(root:int,tree:dict,contador_nos:list,lista_nos:list):
             stack.extend(child for child in tree[node] if child not in visited)
 
 
+list_actions1=[]
+
 if __name__ == "__main__":
-    # TODO:
-    starttime=time.time()
     tabel=parse_instance()
     tree ={}
     lista_nos=[]
     contador_nos=0
     bons=[0]
     lista_proximos=inferencia1(tabel,bons)
-    list_actions=[]
-    inferencia2(tabel,lista_proximos,list_actions,bons)
-    action=actions(tabel,list_actions)
+    inferencia2(tabel,lista_proximos,list_actions1,bons)
+    action=actions(tabel,list_actions1)
     if(bons[0]==len(tabel)**2):
         print(mostra(tabel))
     else:    
@@ -647,8 +627,7 @@ if __name__ == "__main__":
                 lista_nos.append([tabel,[i,action[1]],bons])
         final=dfs_iterative(0,tree,contador_nos,lista_nos)
         print(mostra(final))
-        endtime=time.time()
-        print(endtime-starttime)
+
     
 
 
@@ -657,4 +636,3 @@ if __name__ == "__main__":
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
-    pass
